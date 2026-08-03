@@ -1,6 +1,6 @@
 <div id="movie-details-modal" class="details-modal hidden">
     <div class="details-modal-content">
-        <button id="close-details-btn" class="close-btn">&times;</button>
+        <button id="close-details-btn" class="close-btn" aria-label="Fermer la fiche film">&times;</button>
 
         <div class="details-header" id="details-header-bg">
             <div class="details-header-fade"></div>

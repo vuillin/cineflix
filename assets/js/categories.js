@@ -1,4 +1,4 @@
-const categoriesDefinition = [
+export const categoriesDefinition = [
     { titre: "Soirée frissons", filterFn: (f) => f.genres && f.genres.includes("Horreur") && f.vote_average >= 6.0 },
     { titre: "Les grandes épopées", filterFn: (f) => f.genres && f.genres.includes("Aventure") && f.runtime >= 140 },
     { titre: "Comédies familiales", filterFn: (f) => f.genres && f.genres.includes("Comédie") && f.genres.includes("Familial") },
@@ -40,14 +40,14 @@ const categoriesDefinition = [
     { titre: "Films cultes", filterFn: (f) => f.vote_count > 5000 && f.vote_average > 8.0 }
 ];
 
-function getRandomCategories(allMovies, count = 10, minMovies = 4) {
+export function getRandomCategories(allMovies, count = 10, minMovies = 4) {
     const shuffledCategories = [...categoriesDefinition].sort(() => 0.5 - Math.random());
     const selectedCategories = [];
 
-    for (let currentCategory of shuffledCategories) {
+    for (const currentCategory of shuffledCategories) {
         if (selectedCategories.length >= count) break;
 
-        const matchedMovies = allMovies.filter(film => {
+        const matchedMovies = allMovies.filter((film) => {
             try {
                 return currentCategory.filterFn(film);
             } catch (e) {
@@ -57,10 +57,9 @@ function getRandomCategories(allMovies, count = 10, minMovies = 4) {
 
         if (matchedMovies.length >= minMovies) {
             const shuffledMatchedMovies = [...matchedMovies].sort(() => 0.5 - Math.random());
-
             selectedCategories.push({
                 titre: currentCategory.titre,
-                films: shuffledMatchedMovies
+                films: shuffledMatchedMovies,
             });
         }
     }

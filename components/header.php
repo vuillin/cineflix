@@ -10,7 +10,7 @@
         </nav>
     </div>
     <div class="header-right">
-        <button id="btn-ajouter-film" class="btn-add-film hidden">
+        <button id="btn-ajouter-film" class="btn-add-film hidden" aria-label="Ajouter un film">
             <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor">
                 <path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z"/>
             </svg>

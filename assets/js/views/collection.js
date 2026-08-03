@@ -1,0 +1,98 @@
+import { getFilms, getGenreFilter } from '../state.js';
+import {
+    clearElement,
+    setEmptyListMessage,
+    letterCategory,
+    homogenizeGenre,
+} from '../utils/dom.js';
+import { openMovieDetailsModal } from './details-modal.js';
+
+export function renderCollection() {
+    const listeFilms = document.getElementById('liste-films');
+    if (!listeFilms) return;
+
+    const films = getFilms();
+    const currentGenreFilter = getGenreFilter();
+
+    clearElement(listeFilms);
+
+    let filmsAafficher = films;
+    if (currentGenreFilter) {
+        filmsAafficher = films.filter((film) => {
+            if (!film.genres) return false;
+            const genresDuFilm = film.genres.split(',').map((g) => g.trim());
+            if (currentGenreFilter === 'Science-Fiction') {
+                return genresDuFilm.includes('Science-Fiction') || genresDuFilm.includes('Science Fiction');
+            }
+            return genresDuFilm.includes(currentGenreFilter);
+        });
+    }
+
+    if (filmsAafficher.length === 0) {
+        if (currentGenreFilter) {
+            setEmptyListMessage(listeFilms, `Aucun film trouvé pour le genre ${currentGenreFilter}.`);
+        } else {
+            setEmptyListMessage(listeFilms, 'Aucun film enregistré pour le moment.');
+        }
+        return;
+    }
+
+    let categorieEnCours = '';
+
+    filmsAafficher.forEach((film) => {
+        const category = letterCategory(film.sort_title);
+
+        if (category !== categorieEnCours) {
+            const separator = document.createElement('li');
+            separator.className = 'letter-separator';
+            const heading = document.createElement('h2');
+            heading.textContent = category;
+            separator.appendChild(heading);
+            listeFilms.appendChild(separator);
+            categorieEnCours = category;
+        }
+
+        const li = document.createElement('li');
+        li.className = 'movie-card';
+        li.setAttribute('role', 'button');
+        li.setAttribute('tabindex', '0');
+        li.setAttribute('aria-label', film.title || 'Film');
+
+        if (film.poster) {
+            li.style.backgroundImage = `url("assets/images/small/${film.poster.replace(/"/g, '')}")`;
+        }
+
+        const open = () => openMovieDetailsModal(film);
+        li.addEventListener('click', open);
+        li.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                open();
+            }
+        });
+
+        listeFilms.appendChild(li);
+    });
+}
+
+export function updateGenreCardCounts() {
+    const films = getFilms();
+    const genreCounts = {};
+
+    films.forEach((film) => {
+        if (!film.genres) return;
+        film.genres.split(',').map((g) => g.trim()).forEach((g) => {
+            const name = homogenizeGenre(g);
+            genreCounts[name] = (genreCounts[name] || 0) + 1;
+        });
+    });
+
+    document.querySelectorAll('.genre-card:not(.return-card)').forEach((card) => {
+        const genreName = card.getAttribute('data-value');
+        const count = genreCounts[genreName] || 0;
+        const pText = card.querySelector('p');
+        if (pText) {
+            pText.textContent = `${count} film${count > 1 ? 's' : ''} dans la bibliothèque`;
+        }
+    });
+}

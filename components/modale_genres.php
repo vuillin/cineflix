@@ -2,7 +2,7 @@
     <div class="netflix-modal-content">
         <div class="genre-grid">
 
-            <div class="genre-card return-card" id="close-genre-modal">
+            <div class="genre-card return-card" id="close-genre-modal" role="button" tabindex="0" aria-label="Retour à la bibliothèque">
                 <div class="genre-card-img flex-center">
                     <svg xmlns="http://www.w3.org/2000/svg" height="64px" viewBox="0 -960 960 960" width="64px"
                         fill="#e3e3e3">
