@@ -15,7 +15,7 @@ X-Cineflix-Token: <your CINEFLIX_API_TOKEN>
 | Method | Body | What it does |
 |--------|------|----------------|
 | `GET` | — | List all movies |
-| `POST` | movie fields | Create a movie (`title` required). If `tmdb_id` is set, metadata is filled from TMDB when possible. |
+| `POST` | `{ tmdb_id, poster? }` | Create a movie from TMDB. Metadata comes from TMDB; `poster` is optional (local filename). |
 | `PUT` | movie + `id` | Update a movie (`title` required) |
 | `PATCH` | `{ id, is_favorite }` | Toggle favorite |
 | `DELETE` | `{ id }` | Delete a movie |

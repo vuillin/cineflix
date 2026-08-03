@@ -25,17 +25,20 @@ function movies_handlers(PDO $pdo): callable
             $data = Request::jsonBody();
 
             if ($method === 'POST') {
-                if (empty($data['title'])) {
-                    JsonResponse::error('Le titre est obligatoire');
+                $tmdbId = isset($data['tmdb_id']) ? (int) $data['tmdb_id'] : 0;
+                if ($tmdbId <= 0) {
+                    JsonResponse::error('tmdb_id is required');
                 }
 
-                $payload = $data;
-                $tmdbId = isset($data['tmdb_id']) ? (int) $data['tmdb_id'] : 0;
-                if ($tmdbId > 0) {
-                    $tmdbDetails = $tmdb->getMovieDetails($tmdbId);
-                    if ($tmdbDetails !== null) {
-                        $payload = TmdbService::mergeMovieData($data, $tmdbDetails);
-                    }
+                $tmdbDetails = $tmdb->getMovieDetails($tmdbId);
+                if ($tmdbDetails === null || empty($tmdbDetails['title'])) {
+                    JsonResponse::error('Could not fetch movie from TMDB');
+                }
+
+                $payload = TmdbService::mergeMovieData($data, $tmdbDetails);
+                // TMDB returns remote paths; local backdrops are managed separately
+                if (isset($payload['backdrop']) && is_string($payload['backdrop']) && str_starts_with($payload['backdrop'], '/')) {
+                    $payload['backdrop'] = null;
                 }
 
                 $repo->create($payload);

@@ -423,6 +423,12 @@ button[type="submit"]:hover {
     background-color: #555;
 }
 
+.form-error {
+    color: #ff6b6b;
+    font-size: 0.9rem;
+    margin: 0 0 12px;
+}
+
 .accueil-categories-container {
     padding: 20px 0;
     margin-top: 0px;

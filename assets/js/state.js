@@ -1,6 +1,5 @@
 let allFilms = [];
 let currentGenreFilter = null;
-let filmEnCoursDEdition = null;
 let accueilRendered = false;
 
 export function getFilms() {
@@ -29,12 +28,4 @@ export function getGenreFilter() {
 
 export function setGenreFilter(genre) {
     currentGenreFilter = genre;
-}
-
-export function getEditingFilmId() {
-    return filmEnCoursDEdition;
-}
-
-export function setEditingFilmId(id) {
-    filmEnCoursDEdition = id;
 }
