@@ -75,7 +75,7 @@
                             <div class="form-group-inplace form-group-large">
                                 <label for="inplace-edit-poster">AFFICHE</label>
                                 <input type="text" id="inplace-edit-poster" name="poster"
-                                    placeholder="Ex: fight_club.webp">
+                                    placeholder="Ex: fight_club">
                             </div>
 
                             <div class="form-group-inplace form-group-formats">

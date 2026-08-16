@@ -177,24 +177,33 @@ body {
 }
 
 .btn-add-film {
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    gap: 8px;
-    padding: 10px 20px;
-    background-color: #e50914;
-    color: white;
+    justify-content: center;
+    gap: 10px;
+    padding: 9px 22px;
+    background-color: rgba(109, 109, 110, 0.7);
+    color: #fff;
     border: none;
-    border-radius: 4px;
-    font-size: 0.95rem;
+    border-radius: 999px;
+    font-family: inherit;
+    font-size: 1rem;
     font-weight: 600;
+    line-height: 1;
     cursor: pointer;
-    transition: background-color 0.2s ease, transform 0.1s ease;
     white-space: nowrap;
+    backdrop-filter: blur(4px);
+    transition: background-color 0.2s ease;
+}
+
+.btn-add-film svg {
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
 }
 
 .btn-add-film:hover {
-    background-color: #f40612;
-    transform: scale(1.03);
+    background-color: rgba(109, 109, 110, 0.5);
 }
 
 .page-title {
@@ -293,6 +302,74 @@ body {
     transform: scale(0.85);
 }
 
+.add-film-panel {
+    position: relative;
+    width: 100%;
+    max-width: 560px;
+    margin: 0 20px;
+    padding: 28px;
+    background-color: #1a1a1a;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    text-align: left;
+}
+
+.add-film-panel h2 {
+    margin: 0 40px 36px 0;
+    color: #f0f0f0;
+    font-size: 1.4rem;
+    font-weight: 700;
+}
+
+.add-film-panel .close-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+}
+
+#form-ajout-film {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+}
+
+#form-ajout-film .edit-row {
+    width: 100%;
+    justify-content: flex-start;
+    gap: 15px;
+}
+
+#form-ajout-film .form-group-small {
+    flex: 0 0 30%;
+}
+
+#form-ajout-film .form-group-large {
+    flex: 0 0 calc(70% - 15px);
+}
+
+#form-ajout-film .edit-actions-row {
+    margin-top: 28px;
+}
+
+#form-ajout-film .form-error {
+    margin: 0;
+}
+
+.add-film-divider {
+    width: 100%;
+    height: 1px;
+    margin: 18px 0;
+    background-color: rgba(255, 255, 255, 0.12);
+}
+
+.add-film-formats .formats-buttons-row {
+    margin-top: 0;
+    padding-left: 0;
+    border-left: none;
+    justify-content: center;
+}
+
 .modal-title {
     color: white;
     font-size: 32px;
@@ -358,16 +435,6 @@ body {
     margin: 5px 0 0 0;
     color: #8c8c8c;
     font-size: 13px;
-}
-
-#section-ajout {
-    background-color: #1e1e1e;
-    padding: 20px;
-    border-radius: 8px;
-    border: 1px solid #333;
-    margin-bottom: 30px;
-    width: 100%;
-    max-width: 500px;
 }
 
 .hidden {
@@ -684,15 +751,18 @@ button[type="submit"]:hover {
     right: 20px;
     z-index: 10;
     background: rgba(0, 0, 0, 0.5);
-
     width: 36px;
     height: 36px;
     border-radius: 50%;
     border: none;
     color: white;
-    font-size: 24px;
+    font-size: 22px;
+    font-weight: 400;
+    line-height: 1;
+    padding: 0;
+    padding-bottom: 2px;
     cursor: pointer;
-    display: flex;
+    display: inline-flex;
     justify-content: center;
     align-items: center;
     transition: transform 0.2s, background 0.2s;

@@ -36,10 +36,6 @@ export function initNavigation({ onViewChange } = {}) {
 
         if (btnAjouterFilm) {
             btnAjouterFilm.classList.toggle('hidden', targetId !== 'view-collection');
-            if (targetId !== 'view-collection') {
-                const sectionAjout = document.getElementById('section-ajout');
-                if (sectionAjout) sectionAjout.classList.add('hidden');
-            }
         }
 
         currentView = targetId;

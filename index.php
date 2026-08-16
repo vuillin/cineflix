@@ -45,6 +45,7 @@ $apiToken = getenv('CINEFLIX_API_TOKEN') ?: '';
 
         <?php include 'components/modale_details.php'; ?>
         <?php include 'components/modale_genres.php'; ?>
+        <?php include 'components/modale_ajout.php'; ?>
 
         <main class="main-content">
             <?php include 'views/accueil.php'; ?>

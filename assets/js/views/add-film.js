@@ -4,11 +4,13 @@ import { normalizePosterFilename } from '../utils/dom.js';
 
 export function initAddFilmForm({ reload }) {
     const form = document.getElementById('form-ajout-film');
-    const sectionAjout = document.getElementById('section-ajout');
-    const btnAjouterFilm = document.getElementById('btn-ajouter-film');
+    const modal = document.getElementById('add-film-modal');
+    const btnOpen = document.getElementById('btn-ajouter-film');
+    const btnClose = document.getElementById('close-add-film-modal');
     const errorEl = document.getElementById('ajout-film-error');
+    const formatButtons = form ? form.querySelectorAll('.btn-format') : [];
 
-    if (!form || !sectionAjout) return;
+    if (!form || !modal || !btnOpen) return;
 
     const hideError = () => {
         if (!errorEl) return;
@@ -25,15 +27,40 @@ export function initAddFilmForm({ reload }) {
         errorEl.classList.remove('hidden');
     };
 
-    if (btnAjouterFilm) {
-        btnAjouterFilm.addEventListener('click', () => {
-            sectionAjout.classList.toggle('hidden');
-            if (!sectionAjout.classList.contains('hidden')) {
-                form.reset();
-                hideError();
-            }
+    const resetFormats = () => {
+        formatButtons.forEach((btn) => btn.classList.remove('active'));
+    };
+
+    const openModal = () => {
+        form.reset();
+        resetFormats();
+        hideError();
+        modal.classList.remove('hidden-modal');
+        document.body.style.overflow = 'hidden';
+    };
+
+    const closeModal = () => {
+        modal.classList.add('hidden-modal');
+        document.body.style.overflow = '';
+    };
+
+    formatButtons.forEach((btn) => {
+        btn.addEventListener('click', () => {
+            btn.classList.toggle('active');
         });
+    });
+
+    btnOpen.addEventListener('click', openModal);
+
+    if (btnClose) {
+        btnClose.addEventListener('click', closeModal);
     }
+
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            closeModal();
+        }
+    });
 
     form.addEventListener('submit', async (event) => {
         event.preventDefault();
@@ -41,7 +68,7 @@ export function initAddFilmForm({ reload }) {
 
         const formData = new FormData(form);
         const tmdbId = Number(formData.get('tmdb_id'));
-        let poster = formData.get('poster');
+        const poster = formData.get('poster');
 
         if (!tmdbId) {
             showError('ID TMDB requis.');
@@ -53,6 +80,11 @@ export function initAddFilmForm({ reload }) {
             payload.poster = normalizePosterFilename(String(poster));
         }
 
+        formatButtons.forEach((btn) => {
+            const formatName = btn.getAttribute('data-format');
+            payload[formatName] = btn.classList.contains('active') ? 1 : 0;
+        });
+
         try {
             const response = await createMovie(payload);
             const body = await response.json().catch(() => ({}));
@@ -63,7 +95,8 @@ export function initAddFilmForm({ reload }) {
             }
 
             form.reset();
-            sectionAjout.classList.add('hidden');
+            resetFormats();
+            closeModal();
             invalidateFilms();
             reload();
         } catch (erreur) {
