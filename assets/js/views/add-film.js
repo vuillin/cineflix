@@ -1,6 +1,6 @@
 import { createMovie, fetchTmdbPreview } from '../api/client.js';
 import { invalidateFilms } from '../state.js';
-import { normalizePosterFilename } from '../utils/dom.js';
+import { normalizePosterFilename, posterUrl } from '../utils/dom.js';
 import { toastAdded, toastError } from '../components/toast.js';
 
 export function initAddFilmForm({ reload }) {
@@ -13,11 +13,16 @@ export function initAddFilmForm({ reload }) {
     let isSubmitting = false;
 
     const tmdbInput = document.getElementById('tmdb_id');
+    const posterInput = document.getElementById('poster');
+    const posterFrame = document.getElementById('add-film-poster-preview');
+    const posterImg = document.getElementById('add-film-poster-img');
     const previewValueEl = document.querySelector('#add-film-preview .add-film-preview__value');
 
     let previewTimer = null;
     let previewAbortController = null;
     let previewRequestId = 0;
+    let posterTimer = null;
+    let posterRequestId = 0;
 
     if (!form || !modal || !btnOpen) return;
 
@@ -101,6 +106,55 @@ export function initAddFilmForm({ reload }) {
         }, 400);
     };
 
+    const resetPosterPreview = () => {
+        if (!posterFrame || !posterImg) return;
+
+        posterFrame.classList.add('add-film-poster__frame--empty');
+        posterImg.classList.add('hidden');
+        posterImg.hidden = true;
+        posterImg.removeAttribute('src');
+        posterImg.alt = '';
+    };
+
+    const schedulePosterPreview = (rawValue) => {
+        if (posterTimer) {
+            clearTimeout(posterTimer);
+        }
+
+        const trimmed = String(rawValue || '').trim();
+        if (!trimmed) {
+            resetPosterPreview();
+            return;
+        }
+
+        posterTimer = window.setTimeout(() => {
+            const requestId = ++posterRequestId;
+            const filename = normalizePosterFilename(trimmed);
+            const url = posterUrl(filename);
+
+            if (!url) {
+                resetPosterPreview();
+                return;
+            }
+
+            const probe = new Image();
+            probe.onload = () => {
+                if (requestId !== posterRequestId) return;
+
+                posterImg.src = url;
+                posterImg.alt = 'Aperçu affiche';
+                posterImg.classList.remove('hidden');
+                posterImg.hidden = false;
+                posterFrame.classList.remove('add-film-poster__frame--empty');
+            };
+            probe.onerror = () => {
+                if (requestId !== posterRequestId) return;
+                resetPosterPreview();
+            };
+            probe.src = url;
+        }, 300);
+    };
+
     const setSubmitting = (loading) => {
         isSubmitting = loading;
 
@@ -127,11 +181,17 @@ export function initAddFilmForm({ reload }) {
             clearTimeout(previewTimer);
             previewTimer = null;
         }
+        if (posterTimer) {
+            clearTimeout(posterTimer);
+            posterTimer = null;
+        }
         if (previewAbortController) {
             previewAbortController.abort();
             previewAbortController = null;
         }
         previewRequestId++;
+        posterRequestId++;
+        resetPosterPreview();
 
         resetFormats();
         modal.classList.remove('hidden-modal');
@@ -166,6 +226,12 @@ export function initAddFilmForm({ reload }) {
     if (tmdbInput) {
         tmdbInput.addEventListener('input', () => {
             schedulePreview(tmdbInput.value);
+        });
+    }
+
+    if (posterInput) {
+        posterInput.addEventListener('input', () => {
+            schedulePosterPreview(posterInput.value);
         });
     }
 

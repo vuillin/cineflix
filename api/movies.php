@@ -104,7 +104,7 @@ function movies_handlers(PDO $pdo): callable
                     }
                     $payload['tmdb_id'] = $tmdbId;
                 }
-                
+
                 $poster = MovieRepository::normalizePosterFilename(
                     isset($payload['poster']) ? (string) $payload['poster'] : null
                 );
@@ -116,9 +116,6 @@ function movies_handlers(PDO $pdo): callable
                 $payload['poster'] = $poster;
                 $repo->update($payload);
                 JsonResponse::send(['success' => 'Film modifié']);
-
-                $repo->update($payload);
-                JsonResponse::send(['success' => 'Film modifié !']);
             }
 
             if ($method === 'DELETE') {

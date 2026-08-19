@@ -1,9 +1,12 @@
 <div id="add-film-modal" class="netflix-modal hidden-modal" role="dialog" aria-modal="true" aria-labelledby="add-film-title">
     <div class="add-film-panel">
         <button type="button" id="close-add-film-modal" class="close-btn" aria-label="Fermer">&times;</button>
-        <h2 id="add-film-title">Ajouter un film</h2>
-        <p class="add-film-preview" id="add-film-preview">Film : <span class="add-film-preview__value">-</span></p>
-        <form id="form-ajout-film" autocomplete="off">
+
+        <div class="add-film-layout">
+            <div class="add-film-main">
+                <h2 id="add-film-title">Ajouter un film</h2>
+                <p class="add-film-preview" id="add-film-preview">Film : <span class="add-film-preview__value">-</span></p>
+                <form id="form-ajout-film" autocomplete="off">
             <div class="edit-row">
                 <div class="form-group-inplace form-group-small">
                     <label for="tmdb_id">ID TMDB</label>
@@ -60,19 +63,30 @@
                             <path d="M12 22V12" />
                         </svg>
                     </button>
+                    <button type="submit" id="btn-submit-add-film" class="btn-icon btn-edit-action" title="Valider" aria-label="Valider">
+                        <span class="btn-edit-action__icon" aria-hidden="true">
+                            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor">
+                                <path d="M382-267.69 183.23-466.46 211.77-495 382-324.77 748.23-691l28.54 28.54L382-267.69Z" />
+                            </svg>
+                        </span>
+                        <span class="btn-edit-action__spinner" aria-hidden="true"></span>
+                    </button>
                 </div>
             </div>
-
-            <div class="edit-actions-row">
-                <button type="submit" id="btn-submit-add-film" class="btn-icon btn-edit-action" title="Valider" aria-label="Valider">
-                    <span class="btn-edit-action__icon" aria-hidden="true">
-                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor">
-                            <path d="M382-267.69 183.23-466.46 211.77-495 382-324.77 748.23-691l28.54 28.54L382-267.69Z" />
-                        </svg>
-                    </span>
-                    <span class="btn-edit-action__spinner" aria-hidden="true"></span>
-                </button>
+                </form>
             </div>
-        </form>
+
+            <aside class="add-film-poster" aria-label="Aperçu affiche">
+                <div class="add-film-poster__frame add-film-poster__frame--empty" id="add-film-poster-preview">
+                    <img
+                        class="add-film-poster__image hidden"
+                        id="add-film-poster-img"
+                        alt=""
+                        hidden
+                    >
+                    <span class="add-film-poster__placeholder" aria-hidden="true">?</span>
+                </div>
+            </aside>
+        </div>
     </div>
 </div>
