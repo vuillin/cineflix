@@ -27,22 +27,37 @@ function movies_handlers(PDO $pdo): callable
             if ($method === 'POST') {
                 $tmdbId = isset($data['tmdb_id']) ? (int) $data['tmdb_id'] : 0;
                 if ($tmdbId <= 0) {
-                    JsonResponse::error('tmdb_id is required');
+                    JsonResponse::error('ID TMDB requis');
+                }
+
+                if ($repo->findByTmdbId($tmdbId) !== null) {
+                    JsonResponse::error('Un film avec cet ID TMDB existe déjà', 409);
                 }
 
                 $tmdbDetails = $tmdb->getMovieDetails($tmdbId);
                 if ($tmdbDetails === null || empty($tmdbDetails['title'])) {
-                    JsonResponse::error('Could not fetch movie from TMDB');
+                    JsonResponse::error('Impossible de récupérer le film sur TMDB');
                 }
 
                 $payload = TmdbService::mergeMovieData($data, $tmdbDetails);
-                // TMDB returns remote paths; local backdrops are managed separately
+
                 if (isset($payload['backdrop']) && is_string($payload['backdrop']) && str_starts_with($payload['backdrop'], '/')) {
                     $payload['backdrop'] = null;
                 }
 
+                $poster = MovieRepository::normalizePosterFilename(
+                    isset($payload['poster']) ? (string) $payload['poster'] : null
+                );
+
+                if ($poster !== null && $repo->findByPoster($poster) !== null) {
+                    JsonResponse::error('Cette affiche est déjà utilisée', 409);
+                }
+
+                $payload['poster'] = $poster;
+                $payload['tmdb_id'] = $tmdbId;
+
                 $repo->create($payload);
-                JsonResponse::send(['success' => 'Film ajouté avec brio !']);
+                JsonResponse::send(['success' => 'Film ajouté']);
             }
 
             if ($method === 'PATCH') {

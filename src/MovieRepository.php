@@ -151,4 +151,33 @@ final class MovieRepository
 
         return $params;
     }
+
+    public function findByTmdbId(int $tmdbId): ?array
+    {
+        $stmt = $this->pdo->prepare('SELECT * FROM movies WHERE tmdb_id = :tmdb_id LIMIT 1');
+        $stmt->execute([':tmdb_id' => $tmdbId]);
+        $row = $stmt->fetch();
+        return $row === false ? null : $row;
+    }
+
+    public function findByPoster(string $poster): ?array
+    {
+        $stmt = $this->pdo->prepare('SELECT * FROM movies WHERE poster = :poster LIMIT 1');
+        $stmt->execute([':poster' => $poster]);
+        $row = $stmt->fetch();
+        return $row === false ? null : $row;
+    }
+
+    public static function normalizePosterFilename(?string $poster): ?string
+    {
+        if ($poster === null || trim($poster) === '') {
+            return null;
+        }
+        $value = trim($poster);
+        if (!str_ends_with(strtolower($value), '.webp')) {
+            $value = preg_replace('/\.(png|jpe?g)$/i', '', $value) ?? $value;
+            $value .= '.webp';
+        }
+        return $value;
+    }
 }
