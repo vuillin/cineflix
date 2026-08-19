@@ -1,9 +1,15 @@
 import { updateFavorite, deleteMovie, updateMovie } from '../api/client.js';
 import { invalidateFilms } from '../state.js';
 import { normalizePosterFilename, posterUrl, backdropUrl } from '../utils/dom.js';
+import { toastFavoriteAdded, toastFavoriteRemoved, toastUpdated, toastDeleted, toastError } from '../components/toast.js';
 
 let currentEditingFilmFromModal = null;
 let onReload = null;
+
+async function readApiError(response, fallback) {
+    const body = await response.json().catch(() => ({}));
+    return body.error || fallback;
+}
 
 export function initDetailsModal({ reload }) {
     onReload = reload;
@@ -110,11 +116,17 @@ export function openMovieDetailsModal(film) {
                     btnModalFavorite.setAttribute('aria-label', newState === 1 ? 'Retirer des favoris' : 'Ajouter aux favoris');
                     invalidateFilms();
                     if (onReload) onReload();
+                    if (newState === 1) {
+                        toastFavoriteAdded();
+                    } else {
+                        toastFavoriteRemoved();
+                    }
                 } else {
-                    console.error('Erreur lors de la mise à jour des favoris.');
+                    toastError(await readApiError(response, 'Impossible de mettre à jour les favoris'));
                 }
             } catch (erreur) {
                 console.error('Erreur réseau / Favoris :', erreur);
+                toastError('Erreur de connexion au serveur');
             }
         };
     }
@@ -132,11 +144,13 @@ export function openMovieDetailsModal(film) {
                     closeDetailsModal();
                     invalidateFilms();
                     if (onReload) onReload();
+                    toastDeleted();
                 } else {
-                    console.error("L'API a refusé la suppression");
+                    toastError(await readApiError(response, 'Impossible de supprimer le film'));
                 }
             } catch (erreur) {
                 console.error('Erreur réseau :', erreur);
+                toastError('Erreur de connexion au serveur');
             }
         };
     }
@@ -213,11 +227,13 @@ export function openMovieDetailsModal(film) {
 
                     invalidateFilms();
                     if (onReload) onReload();
+                    toastUpdated();
                 } else {
-                    console.error("L'API a refusé l'édition");
+                    toastError(await readApiError(response, 'Impossible de modifier le film'));
                 }
             } catch (err) {
                 console.error('Erreur réseau (Edition)', err);
+                toastError('Erreur de connexion au serveur');
             }
         };
     }

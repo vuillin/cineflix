@@ -13,6 +13,7 @@ import { initAddFilmForm } from './views/add-film.js';
 import { renderCollection, updateGenreCardCounts } from './views/collection.js';
 import { renderFavoris } from './views/favoris.js';
 import { renderAccueil } from './views/accueil.js';
+import { ensureToastHost, toastError } from './components/toast.js';
 
 async function chargerLesFilms() {
     const listeFilms = document.getElementById('liste-films');
@@ -33,6 +34,7 @@ async function chargerLesFilms() {
         }
     } catch (erreur) {
         console.error('Erreur de récupération :', erreur);
+        toastError('Impossible de charger la bibliothèque');
         if (listeFilms) {
             listeFilms.textContent = '';
             const li = document.createElement('li');
@@ -43,6 +45,8 @@ async function chargerLesFilms() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    ensureToastHost();
+
     const reload = () => {
         invalidateFilms();
         return chargerLesFilms();
