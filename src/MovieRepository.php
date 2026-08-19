@@ -168,6 +168,32 @@ final class MovieRepository
         return $row === false ? null : $row;
     }
 
+    public function findByTmdbIdForOther(int $tmdbId, int $excludeId): ?array
+    {
+        $stmt = $this->pdo->prepare(
+            'SELECT * FROM movies WHERE tmdb_id = :tmdb_id AND id != :exclude_id LIMIT 1'
+        );
+        $stmt->execute([
+            ':tmdb_id' => $tmdbId,
+            ':exclude_id' => $excludeId
+        ]);
+        $row = $stmt->fetch();
+        return $row === false ? null : $row;
+    }
+
+    public function findByPosterForOther(string $poster, int $excludeId): ?array
+    {
+        $stmt = $this->pdo->prepare(
+            'SELECT * FROM movies WHERE poster = :poster AND id != :exclude_id LIMIT 1'
+        );
+        $stmt->execute([
+            ':poster' => $poster,
+            ':exclude_id' => $excludeId,
+        ]);
+        $row = $stmt->fetch();
+        return $row === false ? null : $row;
+    }
+
     public static function normalizePosterFilename(?string $poster): ?string
     {
         if ($poster === null || trim($poster) === '') {

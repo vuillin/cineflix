@@ -2,6 +2,7 @@
     <div class="add-film-panel">
         <button type="button" id="close-add-film-modal" class="close-btn" aria-label="Fermer">&times;</button>
         <h2 id="add-film-title">Ajouter un film</h2>
+        <p class="add-film-preview" id="add-film-preview">Film : <span class="add-film-preview__value">-</span></p>
         <form id="form-ajout-film" autocomplete="off">
             <div class="edit-row">
                 <div class="form-group-inplace form-group-small">
@@ -62,13 +63,14 @@
                 </div>
             </div>
 
-            <p id="ajout-film-error" class="form-error hidden" role="alert"></p>
-
             <div class="edit-actions-row">
-                <button type="submit" class="btn-icon btn-edit-action" title="Valider" aria-label="Valider">
-                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3">
-                        <path d="M382-267.69 183.23-466.46 211.77-495 382-324.77 748.23-691l28.54 28.54L382-267.69Z" />
-                    </svg>
+                <button type="submit" id="btn-submit-add-film" class="btn-icon btn-edit-action" title="Valider" aria-label="Valider">
+                    <span class="btn-edit-action__icon" aria-hidden="true">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor">
+                            <path d="M382-267.69 183.23-466.46 211.77-495 382-324.77 748.23-691l28.54 28.54L382-267.69Z" />
+                        </svg>
+                    </span>
+                    <span class="btn-edit-action__spinner" aria-hidden="true"></span>
                 </button>
             </div>
         </form>

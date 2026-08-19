@@ -93,6 +93,30 @@ function movies_handlers(PDO $pdo): callable
 
                 $payload = array_merge($existing, $data);
                 $payload['id'] = $id;
+
+                if (array_key_exists('tmdb_id', $payload) && $payload['tmdb_id'] !== '' && $payload['tmdb_id'] !== null) {
+                    $tmdbId = (int) $payload['tmdb_id'];
+                    if ($tmdbId <= 0) {
+                        JsonResponse::error('ID TMDB invalide');
+                    }
+                    if ($repo->findByTmdbIdForOther($tmdbId, $id) !== null) {
+                        JsonResponse::error('Un film avec cet ID TMDB existe déjà', 409);
+                    }
+                    $payload['tmdb_id'] = $tmdbId;
+                }
+                
+                $poster = MovieRepository::normalizePosterFilename(
+                    isset($payload['poster']) ? (string) $payload['poster'] : null
+                );
+
+                if ($poster !== null && $repo->findByPosterForOther($poster, $id) !== null) {
+                    JsonResponse::error('Cette affiche est déjà utilisée', 409);
+                }
+
+                $payload['poster'] = $poster;
+                $repo->update($payload);
+                JsonResponse::send(['success' => 'Film modifié']);
+
                 $repo->update($payload);
                 JsonResponse::send(['success' => 'Film modifié !']);
             }

@@ -17,6 +17,38 @@ final class TmdbService
         return $this->apiKey !== '';
     }
 
+    public function getMoviePreview(int $tmdbId): ?array
+    {
+        if (!$this->isConfigured() || $tmdbId <= 0) {
+            return null;
+        }
+
+        $url = $this->baseUrl . 'movie/' . $tmdbId
+            . '?api_key=' . rawurlencode($this->apiKey)
+            . '&language=fr-FR';
+        $responseJson = @file_get_contents($url);
+
+        if ($responseJson === false) {
+            return null;
+        }
+
+        $tmdbData = json_decode($responseJson, true);
+        if (!$tmdbData || isset($tmdbData['status_code']) || empty($tmdbData['title'])) {
+            return null;
+        }
+
+        $releaseYear = null;
+        if (!empty($tmdbData['release_date'])) {
+            $releaseYear = (int) substr($tmdbData['release_date'], 0, 4);
+        }
+        
+        return [
+            'tmdb_id' => $tmdbId,
+            'title' => (string) $tmdbData['title'],
+            'release_year' => $releaseYear,
+        ];
+    }
+
     /**
      * @return array<string, mixed>|null
      */

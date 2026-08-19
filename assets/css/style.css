@@ -14,6 +14,8 @@
     --cf-toast-success: #46d369;
     --cf-toast-danger: #c91922;
     --cf-toast-info: #e5e5e5;
+    --cf-input-radius: 999px;
+    --cf-input-padding-x: 18px;
 }
 
 body {
@@ -319,10 +321,22 @@ body {
 }
 
 .add-film-panel h2 {
-    margin: 0 40px 36px 0;
+    margin: 0 40px 0 0;
     color: #f0f0f0;
     font-size: 1.4rem;
     font-weight: 700;
+}
+
+.add-film-preview {
+    margin: 45px 0 45px 0;
+    color: #f0f0f0;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.add-film-preview__value {
+    color: #888;
+    font-weight: 500;
 }
 
 .add-film-panel .close-btn {
@@ -354,10 +368,6 @@ body {
 
 #form-ajout-film .edit-actions-row {
     margin-top: 28px;
-}
-
-#form-ajout-film .form-error {
-    margin: 0;
 }
 
 .add-film-divider {
@@ -458,16 +468,18 @@ h2 {
 
 label {
     display: block;
+    margin-top: -3px;
     margin-bottom: 5px;
+    padding-left: var(--cf-input-padding-x);
     color: #ccc;
     font-size: 0.9rem;
 }
 
-input {
+input:not([type="hidden"]) {
     width: 100%;
-    padding: 10px;
+    padding: 10px var(--cf-input-padding-x);
     border: 1px solid #444;
-    border-radius: 4px;
+    border-radius: var(--cf-input-radius);
     background-color: #333;
     color: white;
     box-sizing: border-box;
@@ -492,12 +504,6 @@ button[type="submit"] {
 
 button[type="submit"]:hover {
     background-color: #555;
-}
-
-.form-error {
-    color: #ff6b6b;
-    font-size: 0.9rem;
-    margin: 0 0 12px;
 }
 
 .accueil-categories-container {
@@ -1023,7 +1029,9 @@ button[type="submit"]:hover {
 
 .form-group-inplace label {
     display: block;
+    margin-top: -3px;
     margin-bottom: 5px;
+    padding-left: var(--cf-input-padding-x);
     color: #e5e5e5;
     font-size: 1rem;
     font-weight: bold;
@@ -1116,8 +1124,8 @@ button[type="submit"]:hover {
     width: 100%;
     height: 46px;
 
-    padding: 12px;
-    border-radius: 4px;
+    padding: 12px var(--cf-input-padding-x);
+    border-radius: var(--cf-input-radius);
     border: 1px solid #555;
     background-color: #333;
     color: #cecece;
@@ -1181,6 +1189,40 @@ button[type="submit"]:hover {
 .edit-actions-row button[type="submit"].btn-icon:hover svg {
     fill: #66BB6A;
 
+}
+
+.edit-actions-row button[type="submit"].btn-icon.is-loading {
+    pointer-events: none;
+    opacity: 0.85;
+    cursor: wait;
+}
+
+.edit-actions-row button[type="submit"].btn-icon.is-loading .btn-edit-action__icon {
+    display: none;
+}
+
+.edit-actions-row button[type="submit"].btn-icon .btn-edit-action__spinner {
+    display: none;
+    width: 28px;
+    height: 28px;
+    border: 3px solid rgba(76, 175, 80, 0.25);
+    border-top-color: #4CAF50;
+    border-radius: 50%;
+    animation: add-film-spin 0.7s linear infinite;
+}
+
+.edit-actions-row button[type="submit"].btn-icon.is-loading .btn-edit-action__spinner {
+    display: block;
+}
+
+.edit-actions-row button[type="submit"].btn-icon:disabled {
+    pointer-events: none;
+}
+
+@keyframes add-film-spin {
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 #hero-banner {

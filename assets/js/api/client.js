@@ -54,3 +54,19 @@ export async function deleteMovie(id) {
     });
     return response;
 }
+
+export async function fetchTmdbPreview(tmdbId, { signal } = {}) {
+    const response = await fetch(`${API_URL}?tmdb_preview=${encodeURIComponent(tmdbId)}`, {
+        signal,
+    });
+
+    const body = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+        const error = new Error(body.error || 'Preview TMDB impossible');
+        error.status = response.status;
+        throw error;
+    }
+
+    return body;
+}

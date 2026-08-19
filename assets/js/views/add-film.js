@@ -1,4 +1,4 @@
-import { createMovie } from '../api/client.js';
+import { createMovie, fetchTmdbPreview } from '../api/client.js';
 import { invalidateFilms } from '../state.js';
 import { normalizePosterFilename } from '../utils/dom.js';
 import { toastAdded, toastError } from '../components/toast.js';
@@ -9,6 +9,15 @@ export function initAddFilmForm({ reload }) {
     const btnOpen = document.getElementById('btn-ajouter-film');
     const btnClose = document.getElementById('close-add-film-modal');
     const formatButtons = form ? form.querySelectorAll('.btn-format') : [];
+    const submitBtn = document.getElementById('btn-submit-add-film');
+    let isSubmitting = false;
+
+    const tmdbInput = document.getElementById('tmdb_id');
+    const previewValueEl = document.querySelector('#add-film-preview .add-film-preview__value');
+
+    let previewTimer = null;
+    let previewAbortController = null;
+    let previewRequestId = 0;
 
     if (!form || !modal || !btnOpen) return;
 
@@ -16,14 +25,122 @@ export function initAddFilmForm({ reload }) {
         formatButtons.forEach((btn) => btn.classList.remove('active'));
     };
 
+    const resetPreview = () => {
+        if (!previewValueEl) return;
+        previewValueEl.textContent = '-';
+        previewValueEl.classList.remove('is-loading', 'is-error');
+    };
+
+    const setPreviewLoading = () => {
+        if (!previewValueEl) return;
+        previewValueEl.textContent = '…';
+        previewValueEl.classList.add('is-loading');     
+        previewValueEl.classList.remove('is-error');
+    };
+
+    const setPreviewResult = (text) => {
+        if (!previewValueEl) return;
+        previewValueEl.textContent = text;
+        previewValueEl.classList.remove('is-loading', 'is-error');
+    };
+
+    const setPreviewError = (text) => {
+        if (!previewValueEl) return;
+        previewValueEl.textContent = text;
+        previewValueEl.classList.add('is-error');
+        previewValueEl.classList.remove('is-loading');
+    };
+
+    const formatPreviewLabel = ({ title, release_year }) => {
+        if (!title) return 'Film introuvable';
+        return release_year ? `${title} (${release_year})` : title;
+    };
+
+    const schedulePreview = (rawValue) => {
+        if (previewTimer) {
+            clearTimeout(previewTimer);
+        }
+
+        if (previewAbortController) {
+            previewAbortController.abort();
+            previewAbortController = null;
+        }
+
+        const tmdbId = Number(rawValue);
+        if (!tmdbId || tmdbId <= 0) {
+            resetPreview();
+            return;
+        }
+
+        previewTimer = window.setTimeout(async () => {
+
+            const requestId = ++previewRequestId;
+            previewAbortController = new AbortController();
+            setPreviewLoading();
+
+            try {
+                const preview = await fetchTmdbPreview(tmdbId, {
+                    signal: previewAbortController.signal,
+                });
+                if (requestId !== previewRequestId) return;
+                setPreviewResult(formatPreviewLabel(preview));
+
+            } catch (error) {
+
+                if (error.name === 'AbortError') return;
+                if (requestId !== previewRequestId) return;
+                setPreviewError(error.status === 404 ? 'Film introuvable' : 'Erreur TMDB');
+            
+            } finally {
+
+                if (requestId === previewRequestId) {
+                    previewAbortController = null;
+                }
+            }
+
+        }, 400);
+    };
+
+    const setSubmitting = (loading) => {
+        isSubmitting = loading;
+
+        if (submitBtn) {
+            submitBtn.disabled = loading;
+            submitBtn.classList.toggle('is-loading', loading);
+            submitBtn.setAttribute('aria-busy', loading ? 'true' : 'false');
+        }
+
+        if (btnClose) {
+            btnClose.disabled = loading;
+        }
+
+        formatButtons.forEach((btn) => {
+            btn.disabled = loading;
+        });
+    }
+
     const openModal = () => {
         form.reset();
+
+        resetPreview();
+        if (previewTimer) {
+            clearTimeout(previewTimer);
+            previewTimer = null;
+        }
+        if (previewAbortController) {
+            previewAbortController.abort();
+            previewAbortController = null;
+        }
+        previewRequestId++;
+
         resetFormats();
         modal.classList.remove('hidden-modal');
         document.body.style.overflow = 'hidden';
     };
 
     const closeModal = () => {
+        if (isSubmitting) return;
+
         modal.classList.add('hidden-modal');
         document.body.style.overflow = '';
     };
@@ -46,8 +163,16 @@ export function initAddFilmForm({ reload }) {
         }
     });
 
+    if (tmdbInput) {
+        tmdbInput.addEventListener('input', () => {
+            schedulePreview(tmdbInput.value);
+        });
+    }
+
     form.addEventListener('submit', async (event) => {
         event.preventDefault();
+
+        if (isSubmitting) return;
 
         const formData = new FormData(form);
         const tmdbId = Number(formData.get('tmdb_id'));
@@ -68,6 +193,8 @@ export function initAddFilmForm({ reload }) {
             payload[formatName] = btn.classList.contains('active') ? 1 : 0;
         });
 
+        setSubmitting(true);
+
         try {
             const response = await createMovie(payload);
             const body = await response.json().catch(() => ({}));
@@ -86,6 +213,8 @@ export function initAddFilmForm({ reload }) {
         } catch (erreur) {
             console.error('Erreur de connexion :', erreur);
             toastError('Erreur de connexion au serveur');
+        } finally {
+            setSubmitting(false);
         }
     });
 }
