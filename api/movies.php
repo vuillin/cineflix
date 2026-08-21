@@ -25,10 +25,8 @@ function movies_handlers(PDO $pdo): callable
             $data = Request::jsonBody();
 
             if ($method === 'POST') {
-                $tmdbId = isset($data['tmdb_id']) ? (int) $data['tmdb_id'] : 0;
-                if ($tmdbId <= 0) {
-                    JsonResponse::error('ID TMDB requis');
-                }
+                $tmdbId = Input::requirePositiveInt($data['tmdb_id'] ?? null, 'tmdb_id');
+                $formats = Input::readFormatFlags($data);
 
                 if ($repo->findByTmdbId($tmdbId) !== null) {
                     JsonResponse::error('Un film avec cet ID TMDB existe déjà', 409);
@@ -55,53 +53,54 @@ function movies_handlers(PDO $pdo): callable
 
                 $payload['poster'] = $poster;
                 $payload['tmdb_id'] = $tmdbId;
+                $payload = array_merge($payload, $formats);
 
                 $repo->create($payload);
                 JsonResponse::send(['success' => 'Film ajouté']);
             }
 
             if ($method === 'PATCH') {
-                if (empty($data['id'])) {
-                    JsonResponse::error("L'ID est obligatoire pour modifier le favori");
-                }
+                $id = Input::requirePositiveInt($data['id'] ?? null, 'id');
+
                 if (!array_key_exists('is_favorite', $data)) {
                     JsonResponse::error('is_favorite est obligatoire');
                 }
 
-                $id = (int) $data['id'];
+                $isFavorite = Input::requireFlag($data['is_favorite'], 'is_favorite');
+
                 if ($repo->findById($id) === null) {
                     JsonResponse::error('Film introuvable', 404);
                 }
 
-                $repo->updateFavorite($id, (int) $data['is_favorite']);
+                $repo->updateFavorite($id, $isFavorite);
                 JsonResponse::send(['success' => 'Favori mis à jour']);
             }
 
             if ($method === 'PUT') {
-                if (empty($data['id'])) {
-                    JsonResponse::error("L'ID est obligatoire pour modifier");
-                }
-                if (empty($data['title'])) {
+                $id = Input::requirePositiveInt($data['id'] ?? null, 'id');
+
+                if (empty($data['title']) || !is_string($data['title'])) {
                     JsonResponse::error('Le titre est obligatoire pour modifier');
                 }
 
-                $id = (int) $data['id'];
                 $existing = $repo->findById($id);
                 if ($existing === null) {
                     JsonResponse::error('Film introuvable', 404);
                 }
 
+                $formats = Input::readFormatFlags($data);
+
                 $payload = array_merge($existing, $data);
                 $payload['id'] = $id;
+                $payload = array_merge($payload, $formats);
 
-                if (array_key_exists('tmdb_id', $payload) && $payload['tmdb_id'] !== '' && $payload['tmdb_id'] !== null) {
-                    $tmdbId = (int) $payload['tmdb_id'];
-                    if ($tmdbId <= 0) {
-                        JsonResponse::error('ID TMDB invalide');
-                    }
+                if (array_key_exists('tmdb_id', $data) && $data['tmdb_id'] !== '' && $data['tmdb_id'] !== null) {
+                    $tmdbId = Input::requirePositiveInt($data['tmdb_id'], 'tmdb_id');
+
                     if ($repo->findByTmdbIdForOther($tmdbId, $id) !== null) {
                         JsonResponse::error('Un film avec cet ID TMDB existe déjà', 409);
                     }
+
                     $payload['tmdb_id'] = $tmdbId;
                 }
 
@@ -114,16 +113,14 @@ function movies_handlers(PDO $pdo): callable
                 }
 
                 $payload['poster'] = $poster;
+
                 $repo->update($payload);
                 JsonResponse::send(['success' => 'Film modifié']);
             }
 
             if ($method === 'DELETE') {
-                if (empty($data['id'])) {
-                    JsonResponse::error("L'ID est obligatoire pour supprimer");
-                }
+                $id = Input::requirePositiveInt($data['id'] ?? null, 'id');
 
-                $id = (int) $data['id'];
                 if ($repo->findById($id) === null) {
                     JsonResponse::error('Film introuvable', 404);
                 }

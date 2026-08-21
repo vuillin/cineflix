@@ -8,6 +8,7 @@ require_once dirname(__DIR__) . '/src/TmdbService.php';
 require_once dirname(__DIR__) . '/src/Logger.php';
 require_once dirname(__DIR__) . '/src/Http/JsonResponse.php';
 require_once dirname(__DIR__) . '/src/Http/Request.php';
+require_once dirname(__DIR__) . '/src/Http/Input.php';
 require_once __DIR__ . '/movies.php';
 require_once __DIR__ . '/tmdb_preview.php';
 
