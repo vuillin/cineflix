@@ -123,12 +123,18 @@ function movies_handlers(PDO $pdo): callable
                     JsonResponse::error("L'ID est obligatoire pour supprimer");
                 }
 
-                $repo->delete((int) $data['id']);
-                JsonResponse::send(['success' => 'Film supprimé avec succès !']);
+                $id = (int) $data['id'];
+                if ($repo->findById($id) === null) {
+                    JsonResponse::error('Film introuvable', 404);
+                }
+
+                $repo->delete($id);
+                JsonResponse::send(['success' => 'Film supprimé']);
             }
 
             JsonResponse::error('Méthode non autorisée', 405);
         } catch (Throwable $e) {
+            Logger::error('API movies ' . $method, $e);
             JsonResponse::error('Erreur serveur', 500);
         }
     };
