@@ -26,14 +26,9 @@ final class TmdbService
         $url = $this->baseUrl . 'movie/' . $tmdbId
             . '?api_key=' . rawurlencode($this->apiKey)
             . '&language=fr-FR';
-        $responseJson = @file_get_contents($url);
 
-        if ($responseJson === false) {
-            return null;
-        }
-
-        $tmdbData = json_decode($responseJson, true);
-        if (!$tmdbData || isset($tmdbData['status_code']) || empty($tmdbData['title'])) {
+        $tmdbData = $this->fetchJson($url);
+        if ($tmdbData === null || empty($tmdbData['title'])) {
             return null;
         }
 
@@ -62,13 +57,8 @@ final class TmdbService
             . '?api_key=' . rawurlencode($this->apiKey)
             . '&language=fr-FR&append_to_response=credits,keywords,release_dates';
 
-        $responseJson = @file_get_contents($url);
-        if ($responseJson === false) {
-            return null;
-        }
-
-        $tmdbData = json_decode($responseJson, true);
-        if (!$tmdbData || isset($tmdbData['status_code'])) {
+        $tmdbData = $this->fetchJson($url);
+        if ($tmdbData === null) {
             return null;
         }
 
@@ -206,5 +196,55 @@ final class TmdbService
         }
 
         return null;
+    }
+
+    /**
+     * @return array<string, mixed>|null
+     */
+    private function fetchJson(string $url): ?array
+    {
+        if (!function_exists('curl_init')) {
+            return null;
+        }
+
+        $ch = curl_init($url);
+        if ($ch === false) {
+            return null;
+        }
+
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_TIMEOUT => 8,
+            CURLOPT_CONNECTTIMEOUT => 3,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_USERAGENT => 'Cineflix/1.0',
+        ]);
+
+        $body = curl_exec($ch);
+        $status = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+        if ($body === false) {
+            return null;
+        }
+
+        if ($status < 200 || $status >= 300) {
+            return null;
+        }
+
+        if (!is_string($body) || $body === '') {
+            return null;
+        }
+
+        $decoded = json_decode($body, true);
+
+        if (!is_array($decoded)) {
+            return null;
+        }
+
+        if (isset($decoded['status_code'])) {
+            return null;
+        }
+
+        return $decoded;
     }
 }
