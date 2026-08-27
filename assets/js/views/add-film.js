@@ -94,7 +94,16 @@ export function initAddFilmForm({ reload }) {
 
                 if (error.name === 'AbortError') return;
                 if (requestId !== previewRequestId) return;
-                setPreviewError(error.status === 404 ? 'Film introuvable' : 'Erreur TMDB');
+
+                if (error.status === 404) {
+                    setPreviewError('Film introuvable');
+                } else if (error.status === 503) {
+                    setPreviewError('Clé TMDB absente ou invalide');
+                } else if (error.status === 502) {
+                    setPreviewError('TMDB indisponible');
+                } else {
+                    setPreviewError(error.message || 'Erreur TMDB');
+                }   
             
             } finally {
 

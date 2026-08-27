@@ -20,17 +20,14 @@ function tmdb_preview_handler(PDO $pdo): callable
             JsonResponse::error('ID TMDB invalide');
         }
 
-        if (!$tmdb->isConfigured()) {
-            JsonResponse::error('Clé TMDB non configurée', 503);
-        }
-
         $preview = $tmdb->getMoviePreview($tmdbId);
-        if ($preview === null) {
-            JsonResponse::error('Film introuvable sur TMDB', 404);
+        if (!$preview->isOk()) {
+            $preview->respondAsJsonError();
         }
 
-        $preview['already_exists'] = $repo->findByTmdbId($tmdbId) !== null;
-
-        JsonResponse::send($preview);
+        $payload = $preview->data;
+        
+        $payload['already_exists'] = $repo->findByTmdbId($tmdbId) !== null;
+        JsonResponse::send($payload);
     };
 }

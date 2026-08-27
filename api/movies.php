@@ -32,9 +32,14 @@ function movies_handlers(PDO $pdo): callable
                     JsonResponse::error('Un film avec cet ID TMDB existe déjà', 409);
                 }
 
-                $tmdbDetails = $tmdb->getMovieDetails($tmdbId);
-                if ($tmdbDetails === null || empty($tmdbDetails['title'])) {
-                    JsonResponse::error('Impossible de récupérer le film sur TMDB');
+                $tmdbResult = $tmdb->getMovieDetails($tmdbId);
+                if (!$tmdbResult->isOk()) {
+                    $tmdbResult->respondAsJsonError();
+                }
+
+                $tmdbDetails = $tmdbResult->data;
+                if (empty($tmdbDetails['title'])) {
+                    JsonResponse::error('Film introuvable sur TMDB', 404);
                 }
 
                 $payload = TmdbService::mergeMovieData($data, $tmdbDetails);

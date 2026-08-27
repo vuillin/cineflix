@@ -17,50 +17,65 @@ final class TmdbService
         return $this->apiKey !== '';
     }
 
-    public function getMoviePreview(int $tmdbId): ?array
+    public function getMoviePreview(int $tmdbId): TmdbFetchResult
     {
-        if (!$this->isConfigured() || $tmdbId <= 0) {
-            return null;
+        if (!$this->isConfigured()) {
+            return TmdbFetchResult::fail(TmdbFetchResult::ERROR_NOT_CONFIGURED);
+        }
+
+        if ($tmdbId <= 0) {
+            return TmdbFetchResult::fail(TmdbFetchResult::ERROR_INVALID_ID);
         }
 
         $url = $this->baseUrl . 'movie/' . $tmdbId
             . '?api_key=' . rawurlencode($this->apiKey)
             . '&language=fr-FR';
 
-        $tmdbData = $this->fetchJson($url);
-        if ($tmdbData === null || empty($tmdbData['title'])) {
-            return null;
+        $fetch = $this->fetchJson($url);
+        if (!$fetch->isOk()) {
+            return $fetch;
+        }
+
+        $tmdbData = $fetch->data;
+        if (empty($tmdbData['title'])) {
+            return TmdbFetchResult::fail(TmdbFetchResult::ERROR_NOT_FOUND);
         }
 
         $releaseYear = null;
         if (!empty($tmdbData['release_date'])) {
             $releaseYear = (int) substr($tmdbData['release_date'], 0, 4);
         }
-        
-        return [
+
+        return TmdbFetchResult::ok([
             'tmdb_id' => $tmdbId,
             'title' => (string) $tmdbData['title'],
             'release_year' => $releaseYear,
-        ];
+        ]);
     }
 
     /**
-     * @return array<string, mixed>|null
+     * @return TmdbFetchResult
      */
-    public function getMovieDetails(int $tmdbId): ?array
+    public function getMovieDetails(int $tmdbId): TmdbFetchResult
     {
-        if (!$this->isConfigured() || $tmdbId <= 0) {
-            return null;
+        if (!$this->isConfigured()) {
+            return TmdbFetchResult::fail(TmdbFetchResult::ERROR_NOT_CONFIGURED);
+        }
+
+        if ($tmdbId <= 0) {
+            return TmdbFetchResult::fail(TmdbFetchResult::ERROR_INVALID_ID);
         }
 
         $url = $this->baseUrl . 'movie/' . $tmdbId
             . '?api_key=' . rawurlencode($this->apiKey)
             . '&language=fr-FR&append_to_response=credits,keywords,release_dates';
 
-        $tmdbData = $this->fetchJson($url);
-        if ($tmdbData === null) {
-            return null;
+        $fetch = $this->fetchJson($url);
+        if (!$fetch->isOk()) {
+            return $fetch;
         }
+        
+        $tmdbData = $fetch->data;
 
         $castMembers = [];
         if (!empty($tmdbData['credits']['cast'])) {
@@ -124,7 +139,7 @@ final class TmdbService
             $releaseYear = (int) substr($tmdbData['release_date'], 0, 4);
         }
 
-        return [
+        return TmdbFetchResult::ok([
             'title' => $tmdbData['title'] ?? null,
             'director' => $director,
             'release_year' => $releaseYear,
@@ -151,7 +166,7 @@ final class TmdbService
             'keywords' => implode(', ', $keywords),
             'collection_name' => $collectionName,
             'certification' => $certification,
-        ];
+        ]);
     }
 
     /**
@@ -199,17 +214,17 @@ final class TmdbService
     }
 
     /**
-     * @return array<string, mixed>|null
+     * @return TmdbFetchResult
      */
-    private function fetchJson(string $url): ?array
+    private function fetchJson(string $url): TmdbFetchResult
     {
         if (!function_exists('curl_init')) {
-            return null;
+            return TmdbFetchResult::fail(TmdbFetchResult::ERROR_NETWORK);
         }
 
         $ch = curl_init($url);
         if ($ch === false) {
-            return null;
+            return TmdbFetchResult::fail(TmdbFetchResult::ERROR_NETWORK);
         }
 
         curl_setopt_array($ch, [
@@ -222,29 +237,50 @@ final class TmdbService
 
         $body = curl_exec($ch);
         $status = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curlErrno = curl_errno($ch);
 
-        if ($body === false) {
-            return null;
+        if ($body === false || $curlErrno !== 0) {
+            return TmdbFetchResult::fail(TmdbFetchResult::ERROR_NETWORK);
+        }
+
+        if ($status === 401 || $status === 403) {
+            return TmdbFetchResult::fail(TmdbFetchResult::ERROR_UNAUTHORIZED);
+        }
+
+        if ($status === 404) {
+            return TmdbFetchResult::fail(TmdbFetchResult::ERROR_NOT_FOUND);
         }
 
         if ($status < 200 || $status >= 300) {
-            return null;
+            $error = ($status >= 500 || $status === 0)
+                ? TmdbFetchResult::ERROR_NETWORK
+                : TmdbFetchResult::ERROR_INVALID_RESPONSE;
+            return TmdbFetchResult::fail($error);
         }
 
         if (!is_string($body) || $body === '') {
-            return null;
+            return TmdbFetchResult::fail(TmdbFetchResult::ERROR_INVALID_RESPONSE);
         }
 
         $decoded = json_decode($body, true);
-
         if (!is_array($decoded)) {
-            return null;
+            return TmdbFetchResult::fail(TmdbFetchResult::ERROR_INVALID_RESPONSE);
         }
 
         if (isset($decoded['status_code'])) {
-            return null;
+            $code = (int) $decoded['status_code'];
+
+            if ($code === 7) {
+                return TmdbFetchResult::fail(TmdbFetchResult::ERROR_UNAUTHORIZED);
+            }
+            
+            if ($code === 34) {
+                return TmdbFetchResult::fail(TmdbFetchResult::ERROR_NOT_FOUND);
+            }
+
+            return TmdbFetchResult::fail(TmdbFetchResult::ERROR_INVALID_RESPONSE);
         }
 
-        return $decoded;
+        return TmdbFetchResult::ok($decoded);
     }
 }
