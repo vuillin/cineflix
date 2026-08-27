@@ -35,8 +35,14 @@ CREATE TABLE IF NOT EXISTS movies (
     coffret INTEGER DEFAULT 0
 );
 
-CREATE TABLE IF NOT EXISTS schema_migrations (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    migration TEXT NOT NULL UNIQUE,
-    applied_at TEXT NOT NULL DEFAULT (datetime('now'))
-);
+CREATE INDEX IF NOT EXISTS idx_movies_sort_title ON movies(sort_title);
+CREATE INDEX IF NOT EXISTS idx_movies_is_favorite ON movies(is_favorite);
+CREATE INDEX IF NOT EXISTS idx_movies_tmdb_id ON movies(tmdb_id);
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_movies_tmdb_id_unique
+    ON movies(tmdb_id)
+    WHERE tmdb_id IS NOT NULL;
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_movies_poster_unique
+    ON movies(poster)
+    WHERE poster IS NOT NULL AND poster != '';

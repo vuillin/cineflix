@@ -23,7 +23,6 @@ Needs PHP 8.1+ with PDO SQLite.
 ## Useful commands
 
 ```bash
-php migrate.php
 php tests/movie_repository_test.php
 ```
 
