@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 require_once dirname(__DIR__) . '/src/bootstrap.php';
+require_once dirname(__DIR__) . '/src/GenreNormalizer.php';
 require_once dirname(__DIR__) . '/src/MovieRepository.php';
 require_once dirname(__DIR__) . '/src/TmdbService.php';
 require_once dirname(__DIR__) . '/src/TmdbFetchResult.php';

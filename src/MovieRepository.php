@@ -116,7 +116,7 @@ final class MovieRepository
             ':release_year' => $data['release_year'] ?? null,
             ':poster' => $data['poster'] ?? null,
             ':tmdb_id' => $data['tmdb_id'] ?? null,
-            ':genres' => $data['genres'] ?? null,
+            ':genres' => isset($data['genres']) ? GenreNormalizer::normalizeCsv((string) $data['genres']) : null,
             ':backdrop' => $data['backdrop'] ?? null,
             ':certification' => $data['certification'] ?? null,
             ':is_favorite' => (int) ($data['is_favorite'] ?? 0),

@@ -3,7 +3,6 @@ import {
     clearElement,
     setEmptyListMessage,
     letterCategory,
-    homogenizeGenre,
 } from '../utils/dom.js';
 import { openMovieDetailsModal } from './details-modal.js';
 
@@ -21,9 +20,6 @@ export function renderCollection() {
         filmsAafficher = films.filter((film) => {
             if (!film.genres) return false;
             const genresDuFilm = film.genres.split(',').map((g) => g.trim());
-            if (currentGenreFilter === 'Science-Fiction') {
-                return genresDuFilm.includes('Science-Fiction') || genresDuFilm.includes('Science Fiction');
-            }
             return genresDuFilm.includes(currentGenreFilter);
         });
     }
@@ -82,8 +78,7 @@ export function updateGenreCardCounts() {
     films.forEach((film) => {
         if (!film.genres) return;
         film.genres.split(',').map((g) => g.trim()).forEach((g) => {
-            const name = homogenizeGenre(g);
-            genreCounts[name] = (genreCounts[name] || 0) + 1;
+            genreCounts[g] = (genreCounts[g] || 0) + 1;
         });
     });
 

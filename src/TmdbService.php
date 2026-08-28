@@ -109,7 +109,7 @@ final class TmdbService
         $genres = [];
         if (!empty($tmdbData['genres']) && is_array($tmdbData['genres'])) {
             foreach ($tmdbData['genres'] as $genre) {
-                $genres[] = $genre['name'];
+                $genres[] = GenreNormalizer::normalize((string) $genre['name']);
             }
         }
 

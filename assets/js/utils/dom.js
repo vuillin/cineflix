@@ -42,7 +42,3 @@ export function letterCategory(sortTitle) {
     if (firstChar >= 'Y' && firstChar <= 'Z') return 'Y-Z';
     return 'A-C';
 }
-
-export function homogenizeGenre(name) {
-    return name === 'Science Fiction' ? 'Science-Fiction' : name;
-}

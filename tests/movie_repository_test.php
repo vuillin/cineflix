@@ -7,6 +7,7 @@ declare(strict_types=1);
  * Usage : php tests/movie_repository_test.php
  */
 
+require_once dirname(__DIR__) . '/src/GenreNormalizer.php';
 require_once dirname(__DIR__) . '/src/MovieRepository.php';
 
 function assert_true(bool $cond, string $message): void
@@ -30,6 +31,11 @@ $repo = new MovieRepository($pdo);
 
 assert_true(MovieRepository::generateSortTitle('Le Parrain') === 'Parrain', 'sort_title FR');
 assert_true(MovieRepository::generateSortTitle('The Matrix') === 'Matrix', 'sort_title EN');
+
+assert_true(
+    GenreNormalizer::normalizeCsv('Aventure, Science Fiction, Fantastique') === 'Aventure, Science-Fiction, Fantaisie',
+    'genres normalisés'
+);
 
 $id = $repo->create([
     'title' => 'Le Test Film',
