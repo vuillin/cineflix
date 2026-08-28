@@ -4,8 +4,31 @@ declare(strict_types=1);
 
 final class Request
 {
+    private static ?string $testMethod = null;
+    private static ?string $testBody = null;
+
+    public static function setTestMethod(string $method): void
+    {
+        self::$testMethod = strtoupper($method);
+    }
+
+    public static function setTestBody(string $body): void
+    {
+        self::$testBody = $body;
+    }
+
+    public static function resetTestState(): void
+    {
+        self::$testMethod = null;
+        self::$testBody = null;
+    }
+
     public static function method(): string
     {
+        if (self::$testMethod !== null) {
+            return self::$testMethod;
+        }
+
         return strtoupper($_SERVER['REQUEST_METHOD'] ?? 'GET');
     }
 
@@ -14,7 +37,11 @@ final class Request
      */
     public static function jsonBody(): array
     {
-        $raw = file_get_contents('php://input');
+        $raw = self::$testBody;
+        if ($raw === null) {
+            $raw = file_get_contents('php://input');
+        }
+
         if ($raw === false || $raw === '') {
             return [];
         }

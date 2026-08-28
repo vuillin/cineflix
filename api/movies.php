@@ -5,10 +5,14 @@ declare(strict_types=1);
 /**
  * @return callable
  */
-function movies_handlers(PDO $pdo): callable
+/**
+ * @param TmdbService|object|null $tmdb Test double allowed (must expose getMovieDetails()).
+ * @return callable
+ */
+function movies_handlers(PDO $pdo, $tmdb = null): callable
 {
     $repo = new MovieRepository($pdo);
-    $tmdb = new TmdbService();
+    $tmdb = $tmdb ?? new TmdbService();
 
     return static function () use ($repo, $tmdb): void {
         $method = Request::method();
@@ -135,6 +139,8 @@ function movies_handlers(PDO $pdo): callable
             }
 
             JsonResponse::error('Méthode non autorisée', 405);
+        } catch (JsonResponseException $e) {
+            throw $e;
         } catch (Throwable $e) {
             Logger::error('API movies ' . $method, $e);
             JsonResponse::error('Erreur serveur', 500);
