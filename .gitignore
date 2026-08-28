@@ -1,6 +1,9 @@
 # Secrets
 .env
 
+# Local database
+movies.sqlite
+
 # Runtime logs
 logs/*.log
 

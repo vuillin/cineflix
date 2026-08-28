@@ -2,9 +2,7 @@
 
 declare(strict_types=1);
 
-/**
- * @return callable
- */
+
 /**
  * @param TmdbService|object|null $tmdb Test double allowed (must expose getMovieDetails()).
  * @return callable
