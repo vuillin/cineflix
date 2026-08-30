@@ -10,7 +10,12 @@ import { initNavigation } from './views/navigation.js';
 import { initDetailsModal } from './views/details-modal.js';
 import { initGenresModal } from './views/genres-modal.js';
 import { initAddFilmForm } from './views/add-film.js';
-import { renderCollection, updateGenreCardCounts } from './views/collection.js';
+import {
+    renderCollection,
+    updateGenreCardCounts,
+    initCollectionSearch,
+    closeCollectionSearch,
+} from './views/collection.js';
 import { renderFavoris } from './views/favoris.js';
 import { renderAccueil } from './views/accueil.js';
 import { ensureToastHost, toastError } from './components/toast.js';
@@ -52,7 +57,12 @@ document.addEventListener('DOMContentLoaded', () => {
         return chargerLesFilms();
     };
 
-    initNavigation();
+    initCollectionSearch();
+    initNavigation({
+        onViewChange: (viewId) => {
+            if (viewId !== 'view-collection') closeCollectionSearch();
+        },
+    });
     initDetailsModal({ reload: chargerLesFilms });
     initGenresModal({ onFilterChange: () => chargerLesFilms() });
     initAddFilmForm({ reload });

@@ -6,7 +6,7 @@ export function initNavigation({ onViewChange } = {}) {
     const subheaderCollection = document.getElementById('subheader-collection');
     const subheaderFavoris = document.getElementById('subheader-favoris');
     const netflixHeader = document.getElementById('netflix-header');
-    const btnAjouterFilm = document.getElementById('btn-ajouter-film');
+    const collectionHeaderActions = document.getElementById('collection-header-actions');
 
     function updateHeaderScroll() {
         if (currentView === 'view-accueil' && window.scrollY < 50) {
@@ -34,8 +34,8 @@ export function initNavigation({ onViewChange } = {}) {
             subheaderFavoris.classList.toggle('hidden', targetId !== 'view-favoris');
         }
 
-        if (btnAjouterFilm) {
-            btnAjouterFilm.classList.toggle('hidden', targetId !== 'view-collection');
+        if (collectionHeaderActions) {
+            collectionHeaderActions.classList.toggle('hidden', targetId !== 'view-collection');
         }
 
         currentView = targetId;

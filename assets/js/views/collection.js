@@ -6,6 +6,54 @@ import {
 } from '../utils/dom.js';
 import { openMovieDetailsModal } from './details-modal.js';
 
+export function closeCollectionSearch() {
+    const root = document.getElementById('header-search');
+    const btn = document.getElementById('btn-search');
+    const input = document.getElementById('header-search-input');
+    if (!root) return;
+
+    root.classList.remove('is-open');
+    if (btn) btn.setAttribute('aria-expanded', 'false');
+    if (input) {
+        input.blur();
+        input.tabIndex = -1;
+    }
+}
+
+export function initCollectionSearch() {
+    const root = document.getElementById('header-search');
+    const btn = document.getElementById('btn-search');
+    const input = document.getElementById('header-search-input');
+    if (!root || !btn || !input) return;
+
+    const open = () => {
+        root.classList.add('is-open');
+        btn.setAttribute('aria-expanded', 'true');
+        input.tabIndex = 0;
+        input.focus();
+    };
+
+    btn.addEventListener('click', () => {
+        if (root.classList.contains('is-open')) {
+            closeCollectionSearch();
+        } else {
+            open();
+        }
+    });
+
+    document.addEventListener('click', (event) => {
+        if (!root.contains(event.target)) {
+            closeCollectionSearch();
+        }
+    });
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && root.classList.contains('is-open')) {
+            closeCollectionSearch();
+        }
+    });
+}
+
 export function renderCollection() {
     const listeFilms = document.getElementById('liste-films');
     if (!listeFilms) return;
