@@ -93,6 +93,11 @@ body {
     letter-spacing: 1px;
 }
 
+.letter-separator--ghost {
+    visibility: hidden;
+    pointer-events: none;
+}
+
 .netflix-header {
     position: fixed;
     top: 0;

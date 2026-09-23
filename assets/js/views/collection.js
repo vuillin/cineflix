@@ -1,8 +1,15 @@
-import { getFilms, getGenreFilter } from '../state.js';
+import {
+    getFilms,
+    getGenreFilter,
+    getSearchQuery,
+    setSearchQuery,
+    clearSearchQuery,
+} from '../state.js';
 import {
     clearElement,
     setEmptyListMessage,
     letterCategory,
+    filmMatchesSearch,
 } from '../utils/dom.js';
 import { openMovieDetailsModal } from './details-modal.js';
 
@@ -20,17 +27,33 @@ export function closeCollectionSearch() {
     }
 }
 
+export function resetCollectionSearch() {
+    const input = document.getElementById('header-search-input');
+    if (input) input.value = '';
+
+    clearSearchQuery();
+    closeCollectionSearch();
+    renderCollection();
+}
+
 export function initCollectionSearch() {
     const root = document.getElementById('header-search');
     const btn = document.getElementById('btn-search');
     const input = document.getElementById('header-search-input');
     if (!root || !btn || !input) return;
 
+    let debounceTimer = null;
+
     const open = () => {
         root.classList.add('is-open');
         btn.setAttribute('aria-expanded', 'true');
         input.tabIndex = 0;
         input.focus();
+    };
+
+    const applySearch = (value) => {
+        setSearchQuery(value);
+        renderCollection();
     };
 
     btn.addEventListener('click', () => {
@@ -41,6 +64,13 @@ export function initCollectionSearch() {
         }
     });
 
+    input.addEventListener('input', () => {
+        if (debounceTimer) clearTimeout(debounceTimer);
+        debounceTimer = window.setTimeout(() => {
+            applySearch(input.value);
+        }, 150);
+    });
+
     document.addEventListener('click', (event) => {
         if (!root.contains(event.target)) {
             closeCollectionSearch();
@@ -48,9 +78,29 @@ export function initCollectionSearch() {
     });
 
     document.addEventListener('keydown', (event) => {
-        if (event.key === 'Escape' && root.classList.contains('is-open')) {
-            closeCollectionSearch();
+        if (event.key !== 'Escape' || !root.classList.contains('is-open')) return;
+
+        if (input.value.trim() !== '') {
+            input.value = '';
+            applySearch('');
         }
+        closeCollectionSearch();
+    });
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key !== '/') return;
+
+        const target = event.target;
+        const tag = target && target.tagName;
+        if (tag === 'INPUT' || tag === 'TEXTAREA' || (target && target.isContentEditable)) {
+            return;
+        }
+
+        const collectionView = document.getElementById('view-collection');
+        if (!collectionView || collectionView.classList.contains('hidden')) return;
+
+        event.preventDefault();
+        open();
     });
 }
 
@@ -60,10 +110,13 @@ export function renderCollection() {
 
     const films = getFilms();
     const currentGenreFilter = getGenreFilter();
+    const searchQuery = getSearchQuery().trim();
+    const hasSearch = searchQuery !== '';
 
     clearElement(listeFilms);
 
     let filmsAafficher = films;
+
     if (currentGenreFilter) {
         filmsAafficher = films.filter((film) => {
             if (!film.genres) return false;
@@ -72,8 +125,20 @@ export function renderCollection() {
         });
     }
 
+    if (hasSearch) {
+        filmsAafficher = filmsAafficher.filter((film) =>
+            filmMatchesSearch(film, searchQuery)
+        );
+    }
+
     if (filmsAafficher.length === 0) {
-        if (currentGenreFilter) {
+
+        if (hasSearch) {
+            setEmptyListMessage(
+                listeFilms,
+                `Aucun film trouvé pour « ${searchQuery} ».`
+            );
+        } else if (currentGenreFilter) {
             setEmptyListMessage(listeFilms, `Aucun film trouvé pour le genre ${currentGenreFilter}.`);
         } else {
             setEmptyListMessage(listeFilms, 'Aucun film enregistré pour le moment.');
@@ -83,17 +148,30 @@ export function renderCollection() {
 
     let categorieEnCours = '';
 
-    filmsAafficher.forEach((film) => {
-        const category = letterCategory(film.sort_title);
+    if (hasSearch) {
+        const spacer = document.createElement('li');
+        spacer.className = 'letter-separator letter-separator--ghost';
+        spacer.setAttribute('aria-hidden', 'true');
+        const heading = document.createElement('h2');
+        heading.textContent = 'A-C';
+        spacer.appendChild(heading);
+        listeFilms.appendChild(spacer);
+    }
 
-        if (category !== categorieEnCours) {
-            const separator = document.createElement('li');
-            separator.className = 'letter-separator';
-            const heading = document.createElement('h2');
-            heading.textContent = category;
-            separator.appendChild(heading);
-            listeFilms.appendChild(separator);
-            categorieEnCours = category;
+    filmsAafficher.forEach((film) => {
+
+        if (!hasSearch) {
+            const category = letterCategory(film.sort_title);
+
+            if (category !== categorieEnCours) {
+                const separator = document.createElement('li');
+                separator.className = 'letter-separator';
+                const heading = document.createElement('h2');
+                heading.textContent = category;
+                separator.appendChild(heading);
+                listeFilms.appendChild(separator);
+                categorieEnCours = category;
+            }
         }
 
         const li = document.createElement('li');

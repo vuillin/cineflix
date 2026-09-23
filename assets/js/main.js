@@ -14,7 +14,7 @@ import {
     renderCollection,
     updateGenreCardCounts,
     initCollectionSearch,
-    closeCollectionSearch,
+    resetCollectionSearch,
 } from './views/collection.js';
 import { renderFavoris } from './views/favoris.js';
 import { renderAccueil } from './views/accueil.js';
@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initCollectionSearch();
     initNavigation({
         onViewChange: (viewId) => {
-            if (viewId !== 'view-collection') closeCollectionSearch();
+            if (viewId !== 'view-collection') resetCollectionSearch();
         },
     });
     initDetailsModal({ reload: chargerLesFilms });

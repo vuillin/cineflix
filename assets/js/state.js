@@ -1,5 +1,6 @@
 let allFilms = [];
 let currentGenreFilter = null;
+let searchQuery = '';
 let accueilRendered = false;
 
 export function getFilms() {
@@ -28,4 +29,16 @@ export function getGenreFilter() {
 
 export function setGenreFilter(genre) {
     currentGenreFilter = genre;
+}
+
+export function getSearchQuery() {
+    return searchQuery;
+}
+
+export function setSearchQuery(query) {
+    searchQuery = typeof query === 'string' ? query : '';
+}
+
+export function clearSearchQuery() {
+    searchQuery = '';
 }

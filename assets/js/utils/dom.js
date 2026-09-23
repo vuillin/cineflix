@@ -42,3 +42,30 @@ export function letterCategory(sortTitle) {
     if (firstChar >= 'Y' && firstChar <= 'Z') return 'Y-Z';
     return 'A-C';
 }
+
+export function normalizeSearchText(value) {
+    return String(value || '')
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .trim();
+}
+
+export function filmMatchesSearch(film, query) {
+    const needle = normalizeSearchText(query);
+    if (!needle) return true;
+
+    const haystack = [
+        film.title,
+        film.original_title,
+        film.director,
+        film.cast_members,
+    ]
+
+        .map(normalizeSearchText)
+        .join(' ');
+
+    return haystack.includes(needle);
+}
+
+
