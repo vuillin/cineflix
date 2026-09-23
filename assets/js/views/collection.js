@@ -104,6 +104,66 @@ export function initCollectionSearch() {
     });
 }
 
+export function initSortMenu() {
+    const container = document.getElementById('sort-menu-container');
+    const btn = document.getElementById('sort-btn');
+    const menu = document.getElementById('sort-menu');
+    const label = document.getElementById('sort-btn-label');
+    const current = label?.querySelector('.sort-btn__current');
+    if (!container || !btn || !menu || !current) return;
+
+    const setLabel = (sortName) => {
+        current.textContent = sortName;
+    };
+
+    const open = () => {
+        container.classList.add('is-open');
+        menu.classList.remove('hidden');
+        btn.setAttribute('aria-expanded', 'true');
+    };
+
+    const close = () => {
+        container.classList.remove('is-open');
+        menu.classList.add('hidden');
+        btn.setAttribute('aria-expanded', 'false');
+    };
+
+    btn.addEventListener('click', (event) => {
+        event.stopPropagation();
+        if (container.classList.contains('is-open')) {
+            close();
+        } else {
+            open();
+        }
+    });
+
+    menu.querySelectorAll('.sort-menu__item').forEach((item) => {
+        item.addEventListener('click', (event) => {
+            event.stopPropagation();
+            menu.querySelectorAll('.sort-menu__item').forEach((el) => {
+                el.classList.remove('is-selected');
+                el.setAttribute('aria-selected', 'false');
+            });
+            item.classList.add('is-selected');
+            item.setAttribute('aria-selected', 'true');
+            setLabel(item.textContent.trim());
+            close();
+        });
+    });
+
+    document.addEventListener('click', (event) => {
+        if (!container.contains(event.target)) {
+            close();
+        }
+    });
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && container.classList.contains('is-open')) {
+            close();
+        }
+    });
+}
+
 export function renderCollection() {
     const listeFilms = document.getElementById('liste-films');
     if (!listeFilms) return;

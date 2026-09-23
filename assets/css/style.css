@@ -332,21 +332,33 @@ body {
     cursor: pointer;
 }
 
+.collection-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
 .genre-filter-container {
     display: flex;
     align-items: center;
     position: relative;
 }
 
+.sort-menu-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
 .netflix-select-btn {
     font-family: 'Segoe UI', Helvetica, Arial, sans-serif;
     background-color: rgba(0, 0, 0, 0.4);
     color: white;
-    font-size: 20px;
+    font-size: 16px;
     font-weight: 700;
-    padding: 6px 20px;
+    padding: 8px 22px;
     border: 1px solid rgba(255, 255, 255, 0.9);
-    border-radius: 0;
+    border-radius: 999px;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -356,6 +368,70 @@ body {
 
 .netflix-select-btn:hover {
     background-color: rgba(255, 255, 255, 0.1);
+}
+
+.sort-btn__chevron {
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+}
+
+.sort-btn__label {
+    line-height: 1.2;
+}
+
+.sort-btn__current {
+    color: #9a9a9a;
+    font-weight: 600;
+}
+
+.sort-menu-container.is-open .sort-btn__chevron {
+    transform: rotate(180deg);
+}
+
+.sort-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    min-width: 180px;
+    margin: 0;
+    padding: 8px 0;
+    list-style: none;
+    background-color: rgba(20, 20, 20, 0.96);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+    z-index: 1000;
+}
+
+.sort-menu.hidden {
+    display: none;
+}
+
+.sort-menu__item {
+    padding: 10px 18px;
+    color: #e5e5e5;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: default;
+    white-space: nowrap;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.sort-menu__item:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+.sort-menu__item.is-selected {
+    color: #fff;
+    font-weight: 700;
+    background-color: rgba(255, 255, 255, 0.06);
+}
+
+.sort-menu__item.is-selected::before {
+    content: '✓';
+    display: inline-block;
+    width: 1.1em;
+    margin-right: 6px;
+    color: var(--cf-accent, #e50914);
 }
 
 .netflix-modal {

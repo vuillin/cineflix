@@ -14,6 +14,7 @@ import {
     renderCollection,
     updateGenreCardCounts,
     initCollectionSearch,
+    initSortMenu,
     resetCollectionSearch,
 } from './views/collection.js';
 import { renderFavoris } from './views/favoris.js';
@@ -58,6 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     initCollectionSearch();
+    initSortMenu();
     initNavigation({
         onViewChange: (viewId) => {
             if (viewId !== 'view-collection') resetCollectionSearch();
