@@ -37,6 +37,18 @@ export function closeDetailsModal() {
     document.body.style.overflow = '';
 }
 
+function formatLastWatched(isoDate) {
+    if (!isoDate) return '';
+    const date = new Date(`${isoDate}T12:00:00`);
+    if (Number.isNaN(date.getTime())) return '';
+    const formatted = new Intl.DateTimeFormat('fr-FR', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+    }).format(date);
+    return `Dernier visionnage le ${formatted}`;
+}
+
 export function openMovieDetailsModal(film) {
     const detailsModal = document.getElementById('movie-details-modal');
 
@@ -75,6 +87,14 @@ export function openMovieDetailsModal(film) {
     syncFormatMeta(film);
 
     document.getElementById('details-overview').textContent = film.overview || 'Aucun synopsis disponible pour ce titre.';
+
+    const lastWatchedEl = document.getElementById('details-last-watched');
+    if (lastWatchedEl) {
+        const label = formatLastWatched(film.last_watched_at);
+        lastWatchedEl.textContent = label;
+        lastWatchedEl.classList.toggle('hidden', !label);
+    }
+
     document.getElementById('details-cast').textContent = film.cast_members || 'Non renseigné';
     document.getElementById('details-director').textContent = film.director || 'Inconnu';
     document.getElementById('details-genres').textContent = film.genres || 'Non catégorisé';

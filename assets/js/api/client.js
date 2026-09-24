@@ -70,3 +70,12 @@ export async function fetchTmdbPreview(tmdbId, { signal } = {}) {
 
     return body;
 }
+
+export async function importLetterboxdWatches(watches) {
+    const response = await fetch(`${API_URL}?letterboxd_watches=1`, {
+        method: 'POST',
+        headers: writeHeaders(),
+        body: JSON.stringify({ watches }),
+    });
+    return response;
+}

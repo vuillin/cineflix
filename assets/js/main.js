@@ -19,6 +19,7 @@ import {
 } from './views/collection.js';
 import { renderFavoris } from './views/favoris.js';
 import { renderAccueil } from './views/accueil.js';
+import { initLetterboxdImport } from './views/letterboxd.js';
 import { ensureToastHost, toastError } from './components/toast.js';
 
 async function chargerLesFilms() {
@@ -68,6 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initDetailsModal({ reload: chargerLesFilms });
     initGenresModal({ onFilterChange: () => chargerLesFilms() });
     initAddFilmForm({ reload });
+    initLetterboxdImport({ reload });
 
     const closeDetailsBtn = document.getElementById('close-details-btn');
     if (closeDetailsBtn) {

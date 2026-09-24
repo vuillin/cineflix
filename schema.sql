@@ -32,7 +32,8 @@ CREATE TABLE IF NOT EXISTS movies (
     dvd INTEGER DEFAULT 0,
     bluray INTEGER DEFAULT 0,
     steelbook INTEGER DEFAULT 0,
-    coffret INTEGER DEFAULT 0
+    coffret INTEGER DEFAULT 0,
+    last_watched_at TEXT
 );
 
 CREATE INDEX IF NOT EXISTS idx_movies_sort_title ON movies(sort_title);

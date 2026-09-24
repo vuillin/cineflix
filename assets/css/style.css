@@ -1171,6 +1171,13 @@ button[type="submit"]:hover {
 
 }
 
+.details-last-watched {
+    margin: 12px 0 0;
+    font-size: 0.9rem;
+    font-style: italic;
+    color: #808080;
+}
+
 .details-overview::-webkit-scrollbar {
     width: 6px;
 }
@@ -1622,4 +1629,21 @@ button[type="submit"]:hover {
 .toast--info .toast__icon,
 .toast--info .toast__body {
     color: var(--cf-toast-info);
+}
+
+.letterboxd-import {
+    padding: 120px 4% 40px;
+    max-width: 560px;
+}
+
+.letterboxd-import__hint {
+    color: #b3b3b3;
+    margin: 0 0 20px;
+    line-height: 1.5;
+}
+
+.letterboxd-import__status {
+    margin-top: 16px;
+    color: #808080;
+    font-size: 0.95rem;
 }

@@ -206,4 +206,41 @@ final class MovieRepository
         }
         return $value;
     }
+
+    public function updateLastWatched(int $id, string $date): void
+    {
+        $stmt = $this->pdo->prepare(
+            'UPDATE movies SET last_watched_at = :date WHERE id = :id'
+        );
+        $stmt->execute([':id' => $id, ':date' => $date]);
+    }
+
+    public static function normalizeTitle(string $title): string
+    {
+        $value = mb_strtolower($title, 'UTF-8');
+        $value = \Normalizer::normalize($value, \Normalizer::FORM_D) ?: $value;
+        $value = preg_replace('/\p{Mn}/u', '', $value) ?? $value; // accents
+        $value = preg_replace('/^(le |la |les |l\'|un |une |des |the |a |an )/u', '', $value) ?? $value;
+        $value = preg_replace('/[^a-z0-9]+/u', '', $value) ?? $value; // ponctuation / espaces
+        return $value;
+    }
+
+    public function findByTitleAndYear(string $title, int $year): ?array
+    {
+        $stmt = $this->pdo->prepare(
+            'SELECT * FROM movies WHERE release_year = :year'
+        );
+        $stmt->execute([':year' => $year]);
+        $needle = self::normalizeTitle($title);
+        foreach ($stmt->fetchAll() as $row) {
+            $candidates = [
+                self::normalizeTitle((string) ($row['title'] ?? '')),
+                self::normalizeTitle((string) ($row['original_title'] ?? '')),
+            ];
+            if (in_array($needle, $candidates, true)) {
+                return $row;
+            }
+        }
+        return null;
+    }
 }

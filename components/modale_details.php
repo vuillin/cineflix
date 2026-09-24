@@ -25,6 +25,7 @@
                 <div class="details-info-grid">
                     <div class="details-main-info">
                         <p id="details-overview" class="details-overview">Un synopsis captivant...</p>
+                        <p id="details-last-watched" class="details-last-watched hidden"></p>
                     </div>
                     <div class="details-side-info">
                         <p><strong>Distribution :</strong> <span id="details-cast">Acteur 1, Acteur 2</span></p>

@@ -14,9 +14,16 @@ require_once dirname(__DIR__) . '/src/Http/Request.php';
 require_once dirname(__DIR__) . '/src/Http/Input.php';
 require_once __DIR__ . '/movies.php';
 require_once __DIR__ . '/tmdb_preview.php';
+require_once __DIR__ . '/letterboxd_watches.php';
 
 if (isset($_GET['tmdb_preview'])) {
     $handle = tmdb_preview_handler($pdo);
+    $handle();
+    exit;
+}
+
+if (isset($_GET['letterboxd_watches'])) {
+    $handle = letterboxd_watches_handler($pdo);
     $handle();
     exit;
 }
