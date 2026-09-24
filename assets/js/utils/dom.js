@@ -68,4 +68,19 @@ export function filmMatchesSearch(film, query) {
     return haystack.includes(needle);
 }
 
+export function decadeCategory(year) {
+    const y = Number(year);
+    if (!y) return 'Inconnue';
+    return String(Math.floor(y / 10) * 10); // 1987 → "1980"
+}
+
+export function ratingCategory(voteAverage) {
+    const score = Number(voteAverage);
+    if (!score || score <= 0) return 'Non noté';
+
+    const bucket = Math.min(10, Math.floor(score));
+    if (bucket === 10) return '10.0';
+    return `${bucket}.0 - ${bucket}.9`;
+}
+
 

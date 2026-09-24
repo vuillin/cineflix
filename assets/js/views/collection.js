@@ -4,11 +4,15 @@ import {
     getSearchQuery,
     setSearchQuery,
     clearSearchQuery,
+    getSortMode,
+    setSortMode,
 } from '../state.js';
 import {
     clearElement,
     setEmptyListMessage,
     letterCategory,
+    decadeCategory,
+    ratingCategory,
     filmMatchesSearch,
 } from '../utils/dom.js';
 import { openMovieDetailsModal } from './details-modal.js';
@@ -147,6 +151,9 @@ export function initSortMenu() {
             item.classList.add('is-selected');
             item.setAttribute('aria-selected', 'true');
             setLabel(item.textContent.trim());
+            const mode = item.getAttribute('data-sort') || 'title';
+            setSortMode(mode);
+            renderCollection();
             close();
         });
     });
@@ -164,6 +171,12 @@ export function initSortMenu() {
     });
 }
 
+function categoryForFilm(film, sortMode) {
+    if (sortMode === 'year') return decadeCategory(film.release_year);
+    if (sortMode === 'rating') return ratingCategory(film.vote_average);
+    return letterCategory(film.sort_title);
+}
+
 export function renderCollection() {
     const listeFilms = document.getElementById('liste-films');
     if (!listeFilms) return;
@@ -172,6 +185,7 @@ export function renderCollection() {
     const currentGenreFilter = getGenreFilter();
     const searchQuery = getSearchQuery().trim();
     const hasSearch = searchQuery !== '';
+    const sortMode = getSortMode();
 
     clearElement(listeFilms);
 
@@ -190,6 +204,20 @@ export function renderCollection() {
             filmMatchesSearch(film, searchQuery)
         );
     }
+
+    filmsAafficher = [...filmsAafficher].sort((a, b) => {
+        if (sortMode === 'year') {
+            return (b.release_year || 0) - (a.release_year || 0);
+        }
+        if (sortMode === 'rating') {
+            return (b.vote_average || 0) - (a.vote_average || 0);
+        }
+        return String(a.sort_title || '').localeCompare(
+            String(b.sort_title || ''),
+            'fr',
+            { sensitivity: 'base' }
+        );
+    });
 
     if (filmsAafficher.length === 0) {
 
@@ -221,8 +249,8 @@ export function renderCollection() {
     filmsAafficher.forEach((film) => {
 
         if (!hasSearch) {
-            const category = letterCategory(film.sort_title);
-
+            const category = categoryForFilm(film, sortMode);
+        
             if (category !== categorieEnCours) {
                 const separator = document.createElement('li');
                 separator.className = 'letter-separator';

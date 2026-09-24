@@ -1,6 +1,7 @@
 let allFilms = [];
 let currentGenreFilter = null;
 let searchQuery = '';
+let sortMode = 'title';
 let accueilRendered = false;
 
 export function getFilms() {
@@ -41,4 +42,13 @@ export function setSearchQuery(query) {
 
 export function clearSearchQuery() {
     searchQuery = '';
+}
+
+export function getSortMode() {
+    return sortMode;
+}
+
+export function setSortMode(mode) {
+    const allowed = ['title', 'year', 'rating'];
+    sortMode = allowed.includes(mode) ? mode : 'title';
 }
