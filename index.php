@@ -69,6 +69,10 @@ $apiToken = getenv('CINEFLIX_API_TOKEN') ?: '';
             <h1 class="page-title">Mes Favoris</h1>
         </div>
 
+        <div id="subheader-letterboxd" class="page-subheader hidden">
+            <h1 class="page-title">Letterboxd</h1>
+        </div>
+
         <?php include 'components/modale_details.php'; ?>
         <?php include 'components/modale_genres.php'; ?>
         <?php include 'components/modale_ajout.php'; ?>
@@ -77,6 +81,7 @@ $apiToken = getenv('CINEFLIX_API_TOKEN') ?: '';
             <?php include 'views/accueil.php'; ?>
             <?php include 'views/collection.php'; ?>
             <?php include 'views/favoris.php'; ?>
+            <?php include 'views/letterboxd.php'; ?>
         </main>
     </div>
 

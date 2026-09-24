@@ -6,6 +6,7 @@
                 <li><a href="#" class="nav-btn active" data-target="view-accueil">Accueil</a></li>
                 <li><a href="#" class="nav-btn" data-target="view-collection">Collection</a></li>
                 <li><a href="#" class="nav-btn" data-target="view-favoris">Mes favoris</a></li>
+                <li><a href="#" class="nav-btn" data-target="view-letterboxd">Letterboxd</a></li>
             </ul>
         </nav>
     </div>

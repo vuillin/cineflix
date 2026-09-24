@@ -5,6 +5,7 @@ export function initNavigation({ onViewChange } = {}) {
     const viewSections = document.querySelectorAll('.view-section');
     const subheaderCollection = document.getElementById('subheader-collection');
     const subheaderFavoris = document.getElementById('subheader-favoris');
+    const subheaderLetterboxd = document.getElementById('subheader-letterboxd');
     const netflixHeader = document.getElementById('netflix-header');
     const collectionHeaderActions = document.getElementById('collection-header-actions');
 
@@ -32,6 +33,10 @@ export function initNavigation({ onViewChange } = {}) {
 
         if (subheaderFavoris) {
             subheaderFavoris.classList.toggle('hidden', targetId !== 'view-favoris');
+        }
+
+        if (subheaderLetterboxd) {
+            subheaderLetterboxd.classList.toggle('hidden', targetId !== 'view-letterboxd');
         }
 
         if (collectionHeaderActions) {
