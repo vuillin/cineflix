@@ -83,4 +83,37 @@ export function ratingCategory(voteAverage) {
     return `${bucket}.0 - ${bucket}.9`;
 }
 
+const FORMAT_ORDER = ['steelbook', 'coffret', 'bluray', 'dvd'];
+
+const FORMAT_LABELS = {
+    steelbook: 'Steelbook',
+    coffret: 'Coffret',
+    bluray: 'Blu-ray',
+    dvd: 'DVD',
+};
+
+export function expandFilmByFormats(film) {
+    const entries = [];
+
+    FORMAT_ORDER.forEach((key, rank) => {
+        if (film[key] == 1) {
+            entries.push({
+                film,
+                category: FORMAT_LABELS[key],
+                rank,
+            });
+        }
+    });
+
+    if (entries.length === 0) {
+        entries.push({
+            film,
+            category: 'Sans format',
+            rank: FORMAT_ORDER.length,
+        });
+    }
+
+    return entries;
+}
+
 

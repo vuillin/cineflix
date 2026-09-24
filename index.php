@@ -58,6 +58,7 @@ $apiToken = getenv('CINEFLIX_API_TOKEN') ?: '';
                             <li class="sort-menu__item is-selected" role="option" aria-selected="true" data-sort="title">Titre (A–Z)</li>
                             <li class="sort-menu__item" role="option" aria-selected="false" data-sort="year">Année</li>
                             <li class="sort-menu__item" role="option" aria-selected="false" data-sort="rating">Note TMDB</li>
+                            <li class="sort-menu__item" role="option" aria-selected="false" data-sort="format">Formats</li>
                         </ul>
                     </div>
                 </div>

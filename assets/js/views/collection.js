@@ -14,6 +14,7 @@ import {
     decadeCategory,
     ratingCategory,
     filmMatchesSearch,
+    expandFilmByFormats,
 } from '../utils/dom.js';
 import { openMovieDetailsModal } from './details-modal.js';
 
@@ -177,6 +178,10 @@ function categoryForFilm(film, sortMode) {
     return letterCategory(film.sort_title);
 }
 
+function compareByTitle(a, b) {
+    return String(a || '').localeCompare(String(b || ''), 'fr', { sensitivity: 'base' });
+}
+
 export function renderCollection() {
     const listeFilms = document.getElementById('liste-films');
     if (!listeFilms) return;
@@ -205,22 +210,7 @@ export function renderCollection() {
         );
     }
 
-    filmsAafficher = [...filmsAafficher].sort((a, b) => {
-        if (sortMode === 'year') {
-            return (b.release_year || 0) - (a.release_year || 0);
-        }
-        if (sortMode === 'rating') {
-            return (b.vote_average || 0) - (a.vote_average || 0);
-        }
-        return String(a.sort_title || '').localeCompare(
-            String(b.sort_title || ''),
-            'fr',
-            { sensitivity: 'base' }
-        );
-    });
-
     if (filmsAafficher.length === 0) {
-
         if (hasSearch) {
             setEmptyListMessage(
                 listeFilms,
@@ -234,6 +224,32 @@ export function renderCollection() {
         return;
     }
 
+    let itemsAafficher;
+    if (sortMode === 'format') {
+        itemsAafficher = filmsAafficher.flatMap(expandFilmByFormats);
+    } else {
+        itemsAafficher = filmsAafficher.map((film) => ({
+            film,
+            category: null,
+            rank: 0,
+        }));
+    }
+
+    itemsAafficher = [...itemsAafficher].sort((a, b) => {
+        if (sortMode === 'year') {
+            return (b.film.release_year || 0) - (a.film.release_year || 0);
+        }
+        if (sortMode === 'rating') {
+            return (b.film.vote_average || 0) - (a.film.vote_average || 0);
+        }
+        if (sortMode === 'format') {
+            const byFormat = a.rank - b.rank;
+            if (byFormat !== 0) return byFormat;
+            return compareByTitle(a.film.sort_title, b.film.sort_title);
+        }
+        return compareByTitle(a.film.sort_title, b.film.sort_title);
+    });
+
     let categorieEnCours = '';
 
     if (hasSearch) {
@@ -246,11 +262,13 @@ export function renderCollection() {
         listeFilms.appendChild(spacer);
     }
 
-    filmsAafficher.forEach((film) => {
-
+    itemsAafficher.forEach(({ film, category: formatCategory }) => {
         if (!hasSearch) {
-            const category = categoryForFilm(film, sortMode);
-        
+            const category =
+                sortMode === 'format'
+                    ? formatCategory
+                    : categoryForFilm(film, sortMode);
+
             if (category !== categorieEnCours) {
                 const separator = document.createElement('li');
                 separator.className = 'letter-separator';

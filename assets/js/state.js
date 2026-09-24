@@ -49,6 +49,6 @@ export function getSortMode() {
 }
 
 export function setSortMode(mode) {
-    const allowed = ['title', 'year', 'rating'];
+    const allowed = ['title', 'year', 'rating', 'format'];
     sortMode = allowed.includes(mode) ? mode : 'title';
 }
