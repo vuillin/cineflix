@@ -1,4 +1,7 @@
 import { importLetterboxdWatches, importLetterboxdRatings } from '../api/client.js';
+import { getFilms } from '../state.js';
+import { clearElement } from '../utils/dom.js';
+import { openMovieDetailsModal } from './details-modal.js';
 import { toastError, toastSuccess } from '../components/toast.js';
 
 function parseCsvLine(line) {
@@ -140,5 +143,48 @@ export function initLetterboxdImport({ reload } = {}) {
         send: importLetterboxdRatings,
         loadingLabel: (n) => `Envoi de ${n} notes…`,
         reload,
+    });
+}
+
+export function renderLetterboxd() {
+    const liste = document.getElementById('liste-letterboxd');
+    if (!liste) return;
+
+    clearElement(liste);
+
+    const films = getFilms();
+
+    if (films.length === 0) {
+        const li = document.createElement('li');
+        li.style.gridColumn = '1 / -1';
+        li.style.textAlign = 'center';
+        li.style.padding = '50px';
+        li.style.color = '#888';
+        li.textContent = 'Aucun film dans la bibliothèque.';
+        liste.appendChild(li);
+        return;
+    }
+
+    films.forEach((film) => {
+        const li = document.createElement('li');
+        li.className = 'movie-card';
+        li.setAttribute('role', 'button');
+        li.setAttribute('tabindex', '0');
+        li.setAttribute('aria-label', film.title || 'Film');
+
+        if (film.poster) {
+            li.style.backgroundImage = `url("assets/images/small/${film.poster.replace(/"/g, '')}")`;
+        }
+
+        const open = () => openMovieDetailsModal(film);
+        li.addEventListener('click', open);
+        li.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                open();
+            }
+        });
+
+        liste.appendChild(li);
     });
 }

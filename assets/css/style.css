@@ -1631,23 +1631,6 @@ button[type="submit"]:hover {
     color: var(--cf-toast-info);
 }
 
-.letterboxd-import {
-    padding: 120px 4% 40px;
-    max-width: 560px;
-}
-
-.letterboxd-import__actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-}
-
-.letterboxd-import__status {
-    margin-top: 16px;
-    color: #808080;
-    font-size: 0.95rem;
-}
-
 .details-user-rating {
     display: flex;
     align-items: center;
@@ -1681,4 +1664,44 @@ button[type="submit"]:hover {
 
 .rating-star.is-half {
     background: linear-gradient(90deg, #e50914 50%, #4b4b4b 50%);
+}
+
+.letterboxd-import {
+    padding: 0 0 24px;
+    max-width: none;
+}
+
+.letterboxd-import__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.letterboxd-import__status {
+    margin-top: 16px;
+    color: #808080;
+    font-size: 0.95rem;
+}
+
+.movies-grid--compact {
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 12px;
+}
+
+.movies-grid--compact li.movie-card {
+    border-radius: 10px;
+    padding: 8px;
+}
+
+.movies-grid--compact li.movie-card:hover {
+    transform: translateY(-4px) scale(1.02);
+}
+
+.movies-grid--compact li.movie-card--unwatched {
+    filter: grayscale(1);
+    opacity: 0.45;
+}
+.movies-grid--compact li.movie-card--unwatched:hover {
+    filter: grayscale(0.6);
+    opacity: 0.7;
 }

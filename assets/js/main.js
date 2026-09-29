@@ -10,6 +10,7 @@ import { initNavigation } from './views/navigation.js';
 import { initDetailsModal } from './views/details-modal.js';
 import { initGenresModal } from './views/genres-modal.js';
 import { initAddFilmForm } from './views/add-film.js';
+import { initLetterboxdImport, renderLetterboxd } from './views/letterboxd.js';
 import {
     renderCollection,
     updateGenreCardCounts,
@@ -19,8 +20,8 @@ import {
 } from './views/collection.js';
 import { renderFavoris } from './views/favoris.js';
 import { renderAccueil } from './views/accueil.js';
-import { initLetterboxdImport } from './views/letterboxd.js';
 import { ensureToastHost, toastError } from './components/toast.js';
+
 
 async function chargerLesFilms() {
     const listeFilms = document.getElementById('liste-films');
@@ -34,6 +35,7 @@ async function chargerLesFilms() {
         updateGenreCardCounts();
         renderCollection();
         renderFavoris();
+        renderLetterboxd();
 
         if (!isAccueilRendered()) {
             renderAccueil(getFilms());
