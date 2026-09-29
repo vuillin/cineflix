@@ -116,4 +116,26 @@ export function expandFilmByFormats(film) {
     return entries;
 }
 
+export function appendRatingStars(container, rating, { max = 5 } = {}) {
+    const value = Number(rating);
+    if (!value || value <= 0) return false;
+
+    const stepped = Math.min(max, Math.max(0, Math.round(value * 2) / 2));
+
+    container.replaceChildren();
+    for (let i = 1; i <= max; i++) {
+        const star = document.createElement('span');
+        star.className = 'rating-star';
+        if (stepped >= i) {
+            star.classList.add('is-full');
+        } else if (stepped >= i - 0.5) {
+            star.classList.add('is-half');
+        }
+        container.appendChild(star);
+    }
+
+    container.setAttribute('aria-label', `${stepped} sur ${max}`);
+    return true;
+}
+
 

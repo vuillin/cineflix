@@ -1,6 +1,6 @@
 import { importLetterboxdWatches, importLetterboxdRatings } from '../api/client.js';
 import { getFilms } from '../state.js';
-import { clearElement } from '../utils/dom.js';
+import { clearElement, appendRatingStars } from '../utils/dom.js';
 import { openMovieDetailsModal } from './details-modal.js';
 import { toastError, toastSuccess } from '../components/toast.js';
 
@@ -172,8 +172,20 @@ export function renderLetterboxd() {
         li.setAttribute('tabindex', '0');
         li.setAttribute('aria-label', film.title || 'Film');
 
+        li.className = film.last_watched_at
+        ? 'movie-card'
+        : 'movie-card movie-card--unwatched';
+
         if (film.poster) {
             li.style.backgroundImage = `url("assets/images/small/${film.poster.replace(/"/g, '')}")`;
+        }
+
+        if (film.user_rating) {
+            const ratingEl = document.createElement('div');
+            ratingEl.className = 'movie-card__rating';
+            if (appendRatingStars(ratingEl, film.user_rating)) {
+                li.appendChild(ratingEl);
+            }
         }
 
         const open = () => openMovieDetailsModal(film);

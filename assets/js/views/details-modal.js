@@ -1,6 +1,6 @@
 import { updateFavorite, deleteMovie, updateMovie } from '../api/client.js';
 import { invalidateFilms } from '../state.js';
-import { normalizePosterFilename, posterUrl, backdropUrl } from '../utils/dom.js';
+import { normalizePosterFilename, posterUrl, backdropUrl, appendRatingStars } from '../utils/dom.js';
 import { toastFavoriteAdded, toastFavoriteRemoved, toastUpdated, toastDeleted, toastError } from '../components/toast.js';
 
 let currentEditingFilmFromModal = null;
@@ -283,28 +283,5 @@ function syncFormatMeta(film) {
 function fillUserRating(el, rating) {
     const starsEl = el.querySelector('.details-user-rating__stars');
     if (!starsEl) return false;
-
-    const value = Number(rating);
-    if (!value || value <= 0) {
-        starsEl.replaceChildren();
-        return false;
-    }
-
-    // Arrondi au demi le plus proche
-    const stepped = Math.min(5, Math.max(0, Math.round(value * 2) / 2));
-
-    starsEl.replaceChildren();
-    for (let i = 1; i <= 5; i++) {
-        const star = document.createElement('span');
-        star.className = 'rating-star';
-        if (stepped >= i) {
-            star.classList.add('is-full');
-        } else if (stepped >= i - 0.5) {
-            star.classList.add('is-half');
-        }
-        starsEl.appendChild(star);
-    }
-
-    starsEl.setAttribute('aria-label', `${stepped} sur 5`);
-    return true;
+    return appendRatingStars(starsEl, rating);
 }
