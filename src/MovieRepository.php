@@ -215,6 +215,14 @@ final class MovieRepository
         $stmt->execute([':id' => $id, ':date' => $date]);
     }
 
+    public function updateUserRating(int $id, float $rating): void
+    {
+        $stmt = $this->pdo->prepare(
+            'UPDATE movies SET user_rating = :rating WHERE id = :id'
+        );
+        $stmt->execute([':id' => $id, ':rating' => $rating]);
+    }
+
     public static function normalizeTitle(string $title): string
     {
         $value = mb_strtolower($title, 'UTF-8');

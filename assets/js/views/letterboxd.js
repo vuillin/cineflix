@@ -1,7 +1,6 @@
-import { importLetterboxdWatches } from '../api/client.js';
+import { importLetterboxdWatches, importLetterboxdRatings } from '../api/client.js';
 import { toastError, toastSuccess } from '../components/toast.js';
 
-/** Gère les guillemets CSV ("Titre, Director's Cut"). */
 function parseCsvLine(line) {
     const result = [];
     let current = '';
@@ -47,10 +46,32 @@ function parseWatchedCsv(text) {
     return watches;
 }
 
-export function initLetterboxdImport({ reload } = {}) {
-    const btn = document.getElementById('btn-letterboxd-import');
-    const input = document.getElementById('letterboxd-csv-input');
-    const status = document.getElementById('letterboxd-import-status');
+function parseRatingsCsv(text) {
+    const lines = text.replace(/^\uFEFF/, '').split(/\r?\n/).filter((l) => l.trim() !== '');
+    if (lines.length < 2) return [];
+
+    // Date,Name,Year,Letterboxd URI,Rating
+    const ratings = [];
+    for (let i = 1; i < lines.length; i++) {
+        const cols = parseCsvLine(lines[i]);
+        if (cols.length < 5) continue;
+
+        const date = cols[0].trim();
+        const title = cols[1].trim();
+        const year = Number(cols[2].trim());
+        const rating = Number(cols[4].trim());
+
+        if (!title || !year || !/^\d{4}-\d{2}-\d{2}$/.test(date)) continue;
+        if (!rating || rating < 0.5 || rating > 5) continue;
+
+        ratings.push({ title, year, date, rating });
+    }
+    return ratings;
+}
+
+function wireCsvImport({ btnId, inputId, status, parse, send, loadingLabel, reload }) {
+    const btn = document.getElementById(btnId);
+    const input = document.getElementById(inputId);
     if (!btn || !input) return;
 
     btn.addEventListener('click', () => input.click());
@@ -63,17 +84,17 @@ export function initLetterboxdImport({ reload } = {}) {
         try {
             if (status) status.textContent = 'Lecture du CSV…';
             const text = await file.text();
-            const watches = parseWatchedCsv(text);
+            const rows = parse(text);
 
-            if (watches.length === 0) {
+            if (rows.length === 0) {
                 toastError('CSV vide ou format invalide');
                 if (status) status.textContent = '';
                 return;
             }
 
-            if (status) status.textContent = `Envoi de ${watches.length} visionnages…`;
+            if (status) status.textContent = loadingLabel(rows.length);
 
-            const response = await importLetterboxdWatches(watches);
+            const response = await send(rows);
             const body = await response.json().catch(() => ({}));
 
             if (!response.ok) {
@@ -95,5 +116,29 @@ export function initLetterboxdImport({ reload } = {}) {
             toastError(err.message || 'Erreur durant l’import');
             if (status) status.textContent = '';
         }
+    });
+}
+
+export function initLetterboxdImport({ reload } = {}) {
+    const status = document.getElementById('letterboxd-import-status');
+
+    wireCsvImport({
+        btnId: 'btn-letterboxd-watched',
+        inputId: 'letterboxd-watched-input',
+        status,
+        parse: parseWatchedCsv,
+        send: importLetterboxdWatches,
+        loadingLabel: (n) => `Envoi de ${n} visionnages…`,
+        reload,
+    });
+
+    wireCsvImport({
+        btnId: 'btn-letterboxd-ratings',
+        inputId: 'letterboxd-ratings-input',
+        status,
+        parse: parseRatingsCsv,
+        send: importLetterboxdRatings,
+        loadingLabel: (n) => `Envoi de ${n} notes…`,
+        reload,
     });
 }

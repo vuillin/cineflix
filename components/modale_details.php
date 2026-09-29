@@ -26,6 +26,10 @@
                     <div class="details-main-info">
                         <p id="details-overview" class="details-overview">Un synopsis captivant...</p>
                         <p id="details-last-watched" class="details-last-watched hidden"></p>
+                        <div id="details-user-rating" class="details-user-rating hidden">
+                            <span class="details-user-rating__label">Ma note :</span>
+                            <div class="details-user-rating__stars" role="img" aria-label=""></div>
+                        </div>
                     </div>
                     <div class="details-side-info">
                         <p><strong>Distribution :</strong> <span id="details-cast">Acteur 1, Acteur 2</span></p>

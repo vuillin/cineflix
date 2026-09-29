@@ -1636,8 +1636,49 @@ button[type="submit"]:hover {
     max-width: 560px;
 }
 
+.letterboxd-import__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
 .letterboxd-import__status {
     margin-top: 16px;
     color: #808080;
     font-size: 0.95rem;
+}
+
+.details-user-rating {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.details-user-rating__label {
+    font-size: 0.9rem;
+    color: #808080;
+}
+
+.details-user-rating__stars {
+    display: inline-flex;
+    gap: 2px;
+}
+
+.rating-star {
+    width: 18px;
+    height: 18px;
+    background-color: #4b4b4b;
+    clip-path: polygon(
+        50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%,
+        50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%
+    );
+}
+
+.rating-star.is-full {
+    background-color: #e50914;
+}
+
+.rating-star.is-half {
+    background: linear-gradient(90deg, #e50914 50%, #4b4b4b 50%);
 }

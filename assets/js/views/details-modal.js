@@ -95,6 +95,12 @@ export function openMovieDetailsModal(film) {
         lastWatchedEl.classList.toggle('hidden', !label);
     }
 
+    const userRatingEl = document.getElementById('details-user-rating');
+    if (userRatingEl) {
+        const hasRating = fillUserRating(userRatingEl, film.user_rating);
+        userRatingEl.classList.toggle('hidden', !hasRating);
+    }
+
     document.getElementById('details-cast').textContent = film.cast_members || 'Non renseigné';
     document.getElementById('details-director').textContent = film.director || 'Inconnu';
     document.getElementById('details-genres').textContent = film.genres || 'Non catégorisé';
@@ -272,4 +278,33 @@ function syncFormatMeta(film) {
     if (metaBluray) metaBluray.classList.toggle('hidden', film.bluray != 1);
     if (metaSteelbook) metaSteelbook.classList.toggle('hidden', film.steelbook != 1);
     if (metaCoffret) metaCoffret.classList.toggle('hidden', film.coffret != 1);
+}
+
+function fillUserRating(el, rating) {
+    const starsEl = el.querySelector('.details-user-rating__stars');
+    if (!starsEl) return false;
+
+    const value = Number(rating);
+    if (!value || value <= 0) {
+        starsEl.replaceChildren();
+        return false;
+    }
+
+    // Arrondi au demi le plus proche
+    const stepped = Math.min(5, Math.max(0, Math.round(value * 2) / 2));
+
+    starsEl.replaceChildren();
+    for (let i = 1; i <= 5; i++) {
+        const star = document.createElement('span');
+        star.className = 'rating-star';
+        if (stepped >= i) {
+            star.classList.add('is-full');
+        } else if (stepped >= i - 0.5) {
+            star.classList.add('is-half');
+        }
+        starsEl.appendChild(star);
+    }
+
+    starsEl.setAttribute('aria-label', `${stepped} sur 5`);
+    return true;
 }

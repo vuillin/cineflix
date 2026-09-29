@@ -79,3 +79,12 @@ export async function importLetterboxdWatches(watches) {
     });
     return response;
 }
+
+export async function importLetterboxdRatings(ratings) {
+    const response = await fetch(`${API_URL}?letterboxd_ratings=1`, {
+        method: 'POST',
+        headers: writeHeaders(),
+        body: JSON.stringify({ ratings }),
+    });
+    return response;
+}
