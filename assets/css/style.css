@@ -1714,3 +1714,64 @@ button[type="submit"]:hover {
     width: 12px;
     height: 12px;
 }
+
+/* —— Splash logo (once per session) —— */
+
+.splash {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #000;
+    pointer-events: none;
+}
+
+html.splash-done .splash {
+    display: none;
+}
+
+.splash__logo {
+    width: min(52vw, 320px);
+    height: auto;
+    opacity: 0;
+    transform: scale(0.82);
+    will-change: opacity, transform;
+}
+
+.splash.is-entering .splash__logo {
+    animation: splashLogoIn 0.75s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.splash.is-leaving {
+    animation: splashFadeOut 0.45s ease forwards;
+}
+
+@keyframes splashLogoIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.82);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes splashFadeOut {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .splash,
+    .splash.is-entering .splash__logo,
+    .splash.is-leaving {
+        animation: none !important;
+    }
+}

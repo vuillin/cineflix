@@ -21,10 +21,18 @@ $apiToken = getenv('CINEFLIX_API_TOKEN') ?: '';
             display: none !important;
         }
     </style>
+    <script>
+        try {
+            if (sessionStorage.getItem('cineflix-splash-seen') === '1') {
+                document.documentElement.classList.add('splash-done');
+            }
+        } catch (_) {}
+    </script>
 </head>
 
 <body>
 
+    <?php include 'components/splash.php'; ?>
     <?php include 'components/header.php'; ?>
 
     <div class="app-container">

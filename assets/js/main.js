@@ -21,6 +21,7 @@ import {
 import { renderFavoris } from './views/favoris.js';
 import { renderAccueil } from './views/accueil.js';
 import { ensureToastHost, toastError } from './components/toast.js';
+import { playSplash } from './components/splash.js';
 
 
 async function chargerLesFilms() {
@@ -55,6 +56,7 @@ async function chargerLesFilms() {
 
 document.addEventListener('DOMContentLoaded', () => {
     ensureToastHost();
+    playSplash();
 
     const reload = () => {
         invalidateFilms();
