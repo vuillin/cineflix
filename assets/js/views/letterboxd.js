@@ -1,5 +1,9 @@
 import { importLetterboxdWatches, importLetterboxdRatings } from '../api/client.js';
-import { getFilms } from '../state.js';
+import {
+    getFilms,
+    getLetterboxdSortMode,
+    setLetterboxdSortMode,
+} from '../state.js';
 import { clearElement, appendRatingStars } from '../utils/dom.js';
 import { openMovieDetailsModal } from './details-modal.js';
 import { toastError, toastSuccess } from '../components/toast.js';
@@ -144,13 +148,101 @@ export function initLetterboxdImport({ reload } = {}) {
     });
 }
 
+export function initLetterboxdSortMenu() {
+    const container = document.getElementById('letterboxd-sort-menu-container');
+    const btn = document.getElementById('letterboxd-sort-btn');
+    const menu = document.getElementById('letterboxd-sort-menu');
+    const label = document.getElementById('letterboxd-sort-btn-label');
+    const current = label?.querySelector('.sort-btn__current');
+    if (!container || !btn || !menu || !current) return;
+
+    const setLabel = (sortName) => {
+        current.textContent = sortName;
+    };
+
+    const open = () => {
+        container.classList.add('is-open');
+        menu.classList.remove('hidden');
+        btn.setAttribute('aria-expanded', 'true');
+    };
+
+    const close = () => {
+        container.classList.remove('is-open');
+        menu.classList.add('hidden');
+        btn.setAttribute('aria-expanded', 'false');
+    };
+
+    btn.addEventListener('click', (event) => {
+        event.stopPropagation();
+        if (container.classList.contains('is-open')) {
+            close();
+        } else {
+            open();
+        }
+    });
+
+    menu.querySelectorAll('.sort-menu__item').forEach((item) => {
+        item.addEventListener('click', (event) => {
+            event.stopPropagation();
+            menu.querySelectorAll('.sort-menu__item').forEach((el) => {
+                el.classList.remove('is-selected');
+                el.setAttribute('aria-selected', 'false');
+            });
+            item.classList.add('is-selected');
+            item.setAttribute('aria-selected', 'true');
+            setLabel(item.textContent.trim());
+            setLetterboxdSortMode(item.getAttribute('data-sort') || 'title');
+            renderLetterboxd();
+            close();
+        });
+    });
+
+    document.addEventListener('click', (event) => {
+        if (!container.contains(event.target)) {
+            close();
+        }
+    });
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && container.classList.contains('is-open')) {
+            close();
+        }
+    });
+}
+
+function compareByTitle(a, b) {
+    return String(a || '').localeCompare(String(b || ''), 'fr', { sensitivity: 'base' });
+}
+
+function sortLetterboxdFilms(films, mode) {
+    return [...films].sort((a, b) => {
+        if (mode === 'rating') {
+            const ratingA = Number(a.user_rating) || 0;
+            const ratingB = Number(b.user_rating) || 0;
+            if (ratingB !== ratingA) return ratingB - ratingA;
+            return compareByTitle(a.sort_title, b.sort_title);
+        }
+
+        if (mode === 'watched') {
+            const dateA = a.last_watched_at || '';
+            const dateB = b.last_watched_at || '';
+            if (dateA && !dateB) return -1;
+            if (!dateA && dateB) return 1;
+            if (dateA !== dateB) return dateB.localeCompare(dateA);
+            return compareByTitle(a.sort_title, b.sort_title);
+        }
+
+        return compareByTitle(a.sort_title, b.sort_title);
+    });
+}
+
 export function renderLetterboxd() {
     const liste = document.getElementById('liste-letterboxd');
     if (!liste) return;
 
     clearElement(liste);
 
-    const films = getFilms();
+    const films = sortLetterboxdFilms(getFilms(), getLetterboxdSortMode());
 
     if (films.length === 0) {
         const li = document.createElement('li');
@@ -165,14 +257,13 @@ export function renderLetterboxd() {
 
     films.forEach((film) => {
         const li = document.createElement('li');
-        li.className = 'movie-card';
         li.setAttribute('role', 'button');
         li.setAttribute('tabindex', '0');
         li.setAttribute('aria-label', film.title || 'Film');
 
         li.className = film.last_watched_at
-        ? 'movie-card'
-        : 'movie-card movie-card--unwatched';
+            ? 'movie-card'
+            : 'movie-card movie-card--unwatched';
 
         if (film.poster) {
             li.style.backgroundImage = `url("assets/images/small/${film.poster.replace(/"/g, '')}")`;

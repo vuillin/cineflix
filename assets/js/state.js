@@ -52,3 +52,14 @@ export function setSortMode(mode) {
     const allowed = ['title', 'year', 'rating', 'format'];
     sortMode = allowed.includes(mode) ? mode : 'title';
 }
+
+let letterboxdSortMode = 'title';
+
+export function getLetterboxdSortMode() {
+    return letterboxdSortMode;
+}
+
+export function setLetterboxdSortMode(mode) {
+    const allowed = ['title', 'watched', 'rating'];
+    letterboxdSortMode = allowed.includes(mode) ? mode : 'title';
+}

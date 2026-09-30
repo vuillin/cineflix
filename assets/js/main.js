@@ -10,7 +10,7 @@ import { initNavigation } from './views/navigation.js';
 import { initDetailsModal } from './views/details-modal.js';
 import { initGenresModal } from './views/genres-modal.js';
 import { initAddFilmForm } from './views/add-film.js';
-import { initLetterboxdImport, renderLetterboxd } from './views/letterboxd.js';
+import { initLetterboxdImport, initLetterboxdSortMenu, renderLetterboxd } from './views/letterboxd.js';
 import {
     renderCollection,
     updateGenreCardCounts,
@@ -72,6 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initGenresModal({ onFilterChange: () => chargerLesFilms() });
     initAddFilmForm({ reload });
     initLetterboxdImport({ reload });
+    initLetterboxdSortMenu();
 
     const closeDetailsBtn = document.getElementById('close-details-btn');
     if (closeDetailsBtn) {

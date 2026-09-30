@@ -70,7 +70,34 @@ $apiToken = getenv('CINEFLIX_API_TOKEN') ?: '';
         </div>
 
         <div id="subheader-letterboxd" class="page-subheader hidden">
-            <h1 class="page-title">Letterboxd</h1>
+            <div class="subheader-left">
+                <h1 class="page-title">Letterboxd</h1>
+                <div class="collection-toolbar">
+                    <div class="sort-menu-container" id="letterboxd-sort-menu-container">
+                        <button
+                            type="button"
+                            id="letterboxd-sort-btn"
+                            class="netflix-select-btn"
+                            aria-label="Trier la page Letterboxd"
+                            aria-expanded="false"
+                            aria-haspopup="listbox"
+                            aria-controls="letterboxd-sort-menu"
+                        >
+                            <span id="letterboxd-sort-btn-label" class="sort-btn__label">
+                                Trier - <span class="sort-btn__current">Titre (A–Z)</span>
+                            </span>
+                            <svg class="sort-btn__chevron" xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="currentColor" aria-hidden="true">
+                                <path d="M480-344 240-584l56-56 184 184 184-184 56 56-240 240Z"/>
+                            </svg>
+                        </button>
+                        <ul id="letterboxd-sort-menu" class="sort-menu hidden" role="listbox" aria-labelledby="letterboxd-sort-btn">
+                            <li class="sort-menu__item is-selected" role="option" aria-selected="true" data-sort="title">Titre (A–Z)</li>
+                            <li class="sort-menu__item" role="option" aria-selected="false" data-sort="watched">Visionnage</li>
+                            <li class="sort-menu__item" role="option" aria-selected="false" data-sort="rating">Ma note</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <?php include 'components/modale_details.php'; ?>

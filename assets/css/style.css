@@ -213,6 +213,13 @@ body {
     color: rgba(255, 255, 255, 0.55);
 }
 
+.site-logo-link {
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+    flex-shrink: 0;
+}
+
 .site-logo {
     height: 40px;
     margin-right: 50px;

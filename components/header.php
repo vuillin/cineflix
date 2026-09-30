@@ -1,6 +1,8 @@
 <header class="netflix-header" id="netflix-header">
     <div class="header-left">
-        <img src="assets/images/assets/logo_cineflix.png" alt="Cineflix" class="site-logo">
+        <a href="#" id="logo-home" class="site-logo-link" aria-label="Retour à l'accueil">
+            <img src="assets/images/assets/logo_cineflix.png" alt="Cineflix" class="site-logo">
+        </a>
         <nav class="main-nav">
             <ul>
                 <li><a href="#" class="nav-btn active" data-target="view-accueil">Accueil</a></li>

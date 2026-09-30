@@ -1,5 +1,24 @@
 let currentView = 'view-accueil';
 
+const VIEW_TO_HASH = {
+    'view-accueil': 'accueil',
+    'view-collection': 'collection',
+    'view-favoris': 'favoris',
+    'view-letterboxd': 'letterboxd',
+};
+
+const HASH_TO_VIEW = {
+    accueil: 'view-accueil',
+    collection: 'view-collection',
+    favoris: 'view-favoris',
+    letterboxd: 'view-letterboxd',
+};
+
+function viewFromHash() {
+    const hash = window.location.hash.replace(/^#/, '');
+    return HASH_TO_VIEW[hash] || 'view-accueil';
+}
+
 export function initNavigation({ onViewChange } = {}) {
     const navButtons = document.querySelectorAll('.nav-btn');
     const viewSections = document.querySelectorAll('.view-section');
@@ -19,6 +38,12 @@ export function initNavigation({ onViewChange } = {}) {
     }
 
     window.addEventListener('scroll', updateHeaderScroll);
+
+    function syncActiveNav(targetId) {
+        navButtons.forEach((btn) => {
+            btn.classList.toggle('active', btn.getAttribute('data-target') === targetId);
+        });
+    }
 
     function switchView(targetId) {
         viewSections.forEach((section) => section.classList.add('hidden'));
@@ -56,16 +81,46 @@ export function initNavigation({ onViewChange } = {}) {
         }
     }
 
+    function applyView(targetId) {
+        const viewId = document.getElementById(targetId) ? targetId : 'view-accueil';
+        syncActiveNav(viewId);
+        switchView(viewId);
+    }
+
+    function goTo(targetId) {
+        const hash = VIEW_TO_HASH[targetId] || 'accueil';
+        const next = `#${hash}`;
+        if (window.location.hash === next) {
+            applyView(targetId);
+        } else {
+            window.location.hash = hash;
+        }
+    }
+
     navButtons.forEach((btn) => {
         btn.addEventListener('click', (event) => {
             event.preventDefault();
-            navButtons.forEach((b) => b.classList.remove('active'));
-            btn.classList.add('active');
-            switchView(btn.getAttribute('data-target'));
+            goTo(btn.getAttribute('data-target'));
         });
     });
 
-    switchView('view-accueil');
+    const logoHome = document.getElementById('logo-home');
+    if (logoHome) {
+        logoHome.addEventListener('click', (event) => {
+            event.preventDefault();
+            goTo('view-accueil');
+        });
+    }
 
-    return { switchView };
+    window.addEventListener('hashchange', () => {
+        applyView(viewFromHash());
+    });
+
+    const initialView = viewFromHash();
+    if (!window.location.hash) {
+        history.replaceState(null, '', `#${VIEW_TO_HASH[initialView]}`);
+    }
+    applyView(initialView);
+
+    return { switchView: goTo };
 }
