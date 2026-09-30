@@ -50,9 +50,9 @@ body {
     margin: 0;
 }
 
-#liste-favoris {
+#liste-favoris,
+#liste-letterboxd {
     margin-top: 80px;
-
 }
 
 .movies-grid li.movie-card {
@@ -1664,23 +1664,6 @@ button[type="submit"]:hover {
 
 .rating-star.is-half {
     background: linear-gradient(90deg, #e50914 50%, #4b4b4b 50%);
-}
-
-.letterboxd-import {
-    padding: 0 0 24px;
-    max-width: none;
-}
-
-.letterboxd-import__actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-}
-
-.letterboxd-import__status {
-    margin-top: 16px;
-    color: #808080;
-    font-size: 0.95rem;
 }
 
 .movies-grid--compact {

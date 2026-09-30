@@ -8,6 +8,7 @@ export function initNavigation({ onViewChange } = {}) {
     const subheaderLetterboxd = document.getElementById('subheader-letterboxd');
     const netflixHeader = document.getElementById('netflix-header');
     const collectionHeaderActions = document.getElementById('collection-header-actions');
+    const letterboxdHeaderActions = document.getElementById('letterboxd-header-actions');
 
     function updateHeaderScroll() {
         if (currentView === 'view-accueil' && window.scrollY < 50) {
@@ -41,6 +42,10 @@ export function initNavigation({ onViewChange } = {}) {
 
         if (collectionHeaderActions) {
             collectionHeaderActions.classList.toggle('hidden', targetId !== 'view-collection');
+        }
+
+        if (letterboxdHeaderActions) {
+            letterboxdHeaderActions.classList.toggle('hidden', targetId !== 'view-letterboxd');
         }
 
         currentView = targetId;

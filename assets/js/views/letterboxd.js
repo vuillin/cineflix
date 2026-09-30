@@ -123,12 +123,10 @@ function wireCsvImport({ btnId, inputId, status, parse, send, loadingLabel, relo
 }
 
 export function initLetterboxdImport({ reload } = {}) {
-    const status = document.getElementById('letterboxd-import-status');
-
     wireCsvImport({
         btnId: 'btn-letterboxd-watched',
         inputId: 'letterboxd-watched-input',
-        status,
+        status: null,
         parse: parseWatchedCsv,
         send: importLetterboxdWatches,
         loadingLabel: (n) => `Envoi de ${n} visionnages…`,
@@ -138,7 +136,7 @@ export function initLetterboxdImport({ reload } = {}) {
     wireCsvImport({
         btnId: 'btn-letterboxd-ratings',
         inputId: 'letterboxd-ratings-input',
-        status,
+        status: null,
         parse: parseRatingsCsv,
         send: importLetterboxdRatings,
         loadingLabel: (n) => `Envoi de ${n} notes…`,

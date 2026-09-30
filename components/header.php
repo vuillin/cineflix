@@ -27,5 +27,15 @@
                 Ajouter un film
             </button>
         </div>
+        <div id="letterboxd-header-actions" class="header-collection-actions hidden">
+            <input type="file" id="letterboxd-watched-input" class="hidden" accept=".csv,text/csv">
+            <input type="file" id="letterboxd-ratings-input" class="hidden" accept=".csv,text/csv">
+            <button type="button" id="btn-letterboxd-watched" class="btn-add-film">
+                Importer watched.csv
+            </button>
+            <button type="button" id="btn-letterboxd-ratings" class="btn-add-film">
+                Importer ratings.csv
+            </button>
+        </div>
     </div>
 </header>
